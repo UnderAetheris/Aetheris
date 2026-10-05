@@ -81,3 +81,8 @@ AI added `specs/` F00-F24 + TEMPLATE + INVENTORY (28 abilities, 9 manners, 10 ha
 - Response: v0.2 removed. v0.3 derives every visual from what the app does and uses plain wording (see `docs/design/BRAND_DIRECTION.md`, D-022). Two real screens rendered in light and dark for the owner to judge.
 - Lesson for every future model: **no invented feature names, no marketing words, no trend palettes. Show the owner rendered screens, not descriptions.**
 
+### 3.4 Owner feedback on v0.3 (2026-10-05)
+- "Yes it surely feels in the right direction but it can be done better, many more things to add, there is not much interactive and more AI preview like it shows in Cursor and Claude what it's doing, and different sections like we decided like reports and stuff."
+- Response: built clickable prototype v0.4 (`docs/design/prototype/`): live run with thinking, pinned plan, streaming test output and typed-in diff, pause/stop/speed, undo/redo, inline question with Y/N, plus every section and a Ctrl K command menu. Rendered 9 screens and a 40 s screen recording of the live run (recording shared in chat, not in the repo).
+- Single-file build: a short Python script inlines `base.css` + `app.css` (fonts as base64), `data.js`, `app.js` into `aetheris-prototype.html`. Screenshots taken with headless Chromium over CDP (Node's built-in WebSocket); note: at 2x scale, a CSS rule `min-width:max-content` on diff lines froze Chromium's screenshot, so long code lines wrap instead.
+

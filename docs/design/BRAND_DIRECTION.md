@@ -1,4 +1,4 @@
-# Design direction (v0.3)
+# Design direction (v0.3, prototype v0.4)
 
 _Status: proposal, waiting for the owner (Q11). Replaces v0.2, which the owner rejected on 2026-10-05 as generic. v0.1 colors in `DESIGN_SYSTEM.md` are also replaced if this is accepted._
 
@@ -64,6 +64,34 @@ Two screens, light and dark, 1280x800 (the owner's screen size). Sample data, no
 | What it learned | ![](assets/v0.3-learned-light.svg) | ![](assets/v0.3-learned-dark.svg) |
 
 Source HTML: `mockups/v0.3/`. To re-render, see `mockups/README.md`.
+
+## Prototype v0.4 (clickable)
+
+The owner liked the v0.3 direction ("surely in the right direction") but asked for more: more interactive, a live view of what the AI is doing while it works (like Cursor or Claude show), and all the sections we planned. v0.4 is a clickable prototype that does that: `prototype/` (open `prototype/aetheris-prototype.html`).
+
+What the live view shows, and why it fits this app:
+
+| While it works | Why |
+| --- | --- |
+| **Thinking** notes in grey, typed out as it writes them | You see its reasoning in plain words before it acts |
+| **Plan** pinned at the top: done (filled), now (pulsing), next (empty), and the step that will need you (orange) | You know what's coming and where it will stop to ask |
+| The current step pulses and has a small progress bar; the time column is live | Clear what is happening right now |
+| **Right side follows the live step**: test output streams line by line, the code change types in line by line | Same as watching over its shoulder, without a chat wall |
+| "What this means" under every detail: "Running tests only reads your code. Nothing was changed." | Safety is explained, not just shown |
+| Pause, Stop, and "add an instruction while it works" | You stay in control during the run, not only after |
+| Undo / Redo on every change, also after it's done | Mistakes are cheap |
+
+| Screen | |
+| --- | --- |
+| Task running (code change typing in) | ![](assets/v0.4/task-edit.svg) |
+| Task waiting for your OK | ![](assets/v0.4/task-ask.svg) |
+| Home | ![](assets/v0.4/home.svg) |
+| Waiting for you | ![](assets/v0.4/wait.svg) |
+| Reports | ![](assets/v0.4/reports.svg) |
+| What it learned | ![](assets/v0.4/learned.svg) |
+| What it knows | ![](assets/v0.4/memory.svg) |
+| PC health | ![](assets/v0.4/pc.svg) |
+| Settings | ![](assets/v0.4/settings.svg) |
 
 ## Next if accepted
 
