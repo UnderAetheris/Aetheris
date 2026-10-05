@@ -1,94 +1,72 @@
-# Brand direction v0.2: "The Instrument"
+# Design direction (v0.3)
 
-**Status:** proposed (D-016, supersedes the color/type parts of D-014). Owner decision: `handoff/OPEN_QUESTIONS.md` Q11.
-**Author:** AI co-founder, session 3 (2026-10-05).
+_Status: proposal, waiting for the owner (Q11). Replaces v0.2, which the owner rejected on 2026-10-05 as generic. v0.1 colors in `DESIGN_SYSTEM.md` are also replaced if this is accepted._
 
-## 1. Why change v0.1
+## The rule we follow
 
-`DESIGN_SYSTEM.md` v0.1 specified a blue-black background, Inter, a purple `#7C5CFF` accent, and "feels like Linear/Raycast". Every one of those choices is individually good and together they are **the default look of 2024-2026 AI SaaS**. Thousands of generated landing pages and dashboards ship exactly that combination. The owner's bar is "unique, not another vibecoded app". A user should recognize an Aetheris screenshot with the logo cropped out.
+Good product design comes from what the product does. GitHub looks like code review because people go there to review code. Nothing's dot-matrix comes from its hardware. So we don't start from a mood or a trend. We start from what Aetheris actually does all day:
 
-## 2. The idea in one line
+1. It does a task in **steps**: reads files, runs tests, edits code, runs commands.
+2. Every step goes through **one safety check**. Some steps it does on its own, some it has to ask you about, some it is never allowed to do.
+3. Every change it makes to your computer **can be undone**.
+4. It **only keeps an improvement to itself if a fixed set of practice tasks says it got better** and nothing broke.
 
-> Aetheris looks like a **precision instrument that keeps a lab notebook**: calm graphite and bone, hairline rules, monospaced evidence, and color used only when it means something.
+The design shows those four things and nothing else.
 
-The look comes from the product promise. Aetheris is the assistant that **proves** it got better and can undo anything. Instruments, receipts, calibration certificates, and flight recorders are the visual language of proof, and no AI chat app uses them.
+## What that means on screen
 
-## 3. Principles
+| What Aetheris does | How the design shows it |
+| --- | --- |
+| Works in steps | The main view of a task is a list of steps with the time on the left, like a log. No chat bubbles. |
+| Some steps only look, some change things | A **hollow circle** means it only looked (read a file, ran tests). A **filled square** means it changed something on your computer. You can tell at a glance what touched your files. |
+| Some steps need you | An **orange square** and an inline box: the question in plain words, the exact command, what happens if you say yes, and whether it can be undone. Buttons say what they do ("Push", "Not now"), never "Approve". |
+| Everything can be undone | Every change row has **Undo** right on it. The right side shows the exact change (diff) for the selected step. |
+| It explains itself | Under each change: "Why this change" in one or two plain sentences. |
+| It gets better, and proves it | "What it learned" shows practice tasks solved per week, and every change it tried with the result, including the ones it rejected and why. |
+| It runs on free model limits | The title bar shows which model is in use and how many free requests are left today. |
+| Which tool ran | The real tool name (`run_tests`, `edit_file`) is shown next to the step in small monospace text. Nothing is hidden. |
 
-1. **Color is a signal, never decoration.** The base UI is near-monochrome. The only hues on screen are semantic (passed, needs you, blocked, research). When something is colored, it matters.
-2. **Evidence is visible.** Every claim of progress carries a receipt chip (`rcpt_3d53…`, `bench coding_tasks_v1 +4.2%`). Click it to see the measurement.
-3. **Hairlines, not shadows.** Structure comes from 1px rules on a 4px grid, like engineering paper. Elevation only for floating layers.
-4. **Precise motion.** Movement eases like an instrument needle: fast attack, soft settle, no bounce, no confetti.
-5. **Typography carries the brand.** Distinct type is cheaper and more recognizable than illustrations.
+The logo is the same idea: a line with a circle (looked), a square (changed), and an orange square (asked you). It is the log in miniature.
 
-## 4. Tokens (replace §1 color/type in DESIGN_SYSTEM.md once accepted)
+## Visual rules
 
-### Color: dark ("Graphite"), default
+- **Color only means something.** Text is near-black on warm off-white (or the reverse in dark mode). Color is used for: orange = waiting for you, red = failed or blocked, green/red = added/removed lines. Nothing else is colored. No brand gradient, no glow.
+- **Type:** IBM Plex Sans for words, IBM Plex Mono for anything the computer produced (times, paths, commands, counts, code). Free (OFL), made for technical interfaces, and readable at 12-13 px. On Windows we may switch the UI text to Segoe UI Variable after testing.
+- **Density like a desktop tool:** 13 px base text, 34 px title bar, 248 px task list, thin 1 px lines instead of cards and shadows, 4-6 px corner radius.
+- **Layout:** task list (left), the task's steps (middle), details of the selected step (right). Same on every screen, so nothing jumps around.
+- **Motion:** only when something changes state (a step finishes, a question appears). No decorative animation.
+- **Light and dark** are both first-class. Light is the default.
 
-| Token | Value | Use |
+## Writing rules
+
+The words matter as much as the visuals. The owner explicitly does not want AI-sounding wording.
+
+- Say what happened, in plain words: "Ran the tests: 38 passed, 2 failed." Not "Execution complete."
+- Aetheris speaks in first person only when it asks something: "Can I push this fix to GitHub?"
+- No made-up names for features. "What it learned", "History", "Settings", "Waiting for you". Not "Insights", "Memory Core", "Trust Center".
+- No hype words: seamless, powerful, intelligent, magic, supercharge, unlock, journey, delve.
+- Numbers are exact and real. If it doesn't know, it says "unknown".
+
+## What we will not do
+
+- Purple-blue gradients, glassmorphism, glowing borders, sparkle icons, emoji in the UI.
+- Dashboards full of big number cards that don't help you do anything.
+- Chat-bubble layout for task work.
+- Stock illustrations or 3D blobs.
+
+## Mockups
+
+Two screens, light and dark, 1280x800 (the owner's screen size). Sample data, not real results.
+
+| Screen | Light | Dark |
 | --- | --- | --- |
-| `--bg` | `#0E0E0C` | Warm graphite, not blue-black |
-| `--surface-1` | `#151513` | Sidebar, cards |
-| `--surface-2` | `#1D1D1A` | Hover, inputs |
-| `--rule` | `#2A2A26` | Hairlines and dividers |
-| `--text-1` | `#ECE8DF` | "Bone" primary text |
-| `--text-2` | `#A9A498` | Secondary |
-| `--text-3` | `#6E6A60` | Meta, timestamps |
-| `--ink` | `#ECE8DF` | Primary action = inverted bone button with graphite text |
-| `--signal` | `#C8FF3D` | **Aetheris identity.** Phosphor-chartreuse, used sparingly: live cursor, "Aetheris is acting" pulse, focus ring, Level tick |
-| `--pass` | `#4FD1A5` | Passed, safe, allowed |
-| `--attend` | `#F2B24C` | Needs you, pending approval |
-| `--block` | `#FF6B57` | Failed, blocked, threat |
-| `--research` | `#7FB8FF` | Research, links, citations |
+| A task, waiting for your OK | ![](assets/v0.3-task-light.svg) | ![](assets/v0.3-task-dark.svg) |
+| What it learned | ![](assets/v0.3-learned-light.svg) | ![](assets/v0.3-learned-dark.svg) |
 
-Light ("Paper"): bg `#F3EFE6`, surface `#FBF8F2`, rule `#DDD6C8`, text `#1A1916`, signal darkened to `#5E7F00` for contrast. Every text pair meets WCAG AA 4.5:1. Verify with a contrast test in CI when tokens land.
+Source HTML: `mockups/v0.3/`. To re-render, see `mockups/README.md`.
 
-Why chartreuse: it reads as "live signal" (oscilloscope phosphor, CRT), it is not owned by any major AI brand (purple, black, orange, and teal are taken), and it is hard to fake by accident.
+## Next if accepted
 
-### Type (all free, OFL, self-hosted)
-
-| Role | Font | Why |
-| --- | --- | --- |
-| UI | **Instrument Sans** | Neutral, slightly technical, rare in AI apps; the name matches the metaphor |
-| Evidence, IDs, code, numbers | **JetBrains Mono** | Tabular, legible at 12px |
-| Reports and long-form | **Newsreader** (serif) | Reports read like a typeset lab notebook, not a dashboard |
-
-Scale and weights stay as in v0.1.
-
-## 5. Signature elements (what makes it recognizable)
-
-| Element | Description | Where |
-| --- | --- | --- |
-| **Trace rail** | A thin vertical rail beside every task: `plan · act · measure · record`, with a tick per step. Live steps pulse in `--signal`. Clicking a tick opens the evidence. | Task detail, activity feed |
-| **Receipt chip** | Mono pill with a short ID and a one-word verdict. Every "done", "improved", or "undone" claim has one. | Everywhere progress is claimed |
-| **Calibration card** | The "Level" is shown as a calibration certificate (benchmark, baseline, current, delta, date, signed by the eval gate), not an XP bar. | Home, Reports |
-| **Sign to approve** | T2 approvals use a 600ms press-and-hold that fills a hairline ring (keyboard: hold `A`). Fast for experts, impossible to approve by accident. | Approvals inbox |
-| **Hairline grid** | A faint 4px grid shows behind empty states and reports; disappears in dense views. | Empty states, reports |
-| **Quiet pulse** | When Aetheris works unattended, a single 2px `--signal` line breathes in the sidebar. No spinners. | Global |
-
-## 6. Motion tokens
-
-| Token | Duration | Easing |
-| --- | --- | --- |
-| `--motion-tick` | 90ms | `cubic-bezier(.3,0,.1,1)` (needle attack) |
-| `--motion-settle` | 220ms | `cubic-bezier(.16,1,.3,1)` |
-| `--motion-page` | 300ms | same as settle |
-
-The v0.1 rules stay: motion explains state change; `prefers-reduced-motion` swaps movement for opacity.
-
-## 7. Website (marketing) direction
-
-- Hero: a **live, real trace** of Aetheris fixing a failing test, rendered as an instrument readout, ending in a receipt chip and an "Undo" button. No 3D blobs, no gradient meshes, no floating chat bubbles.
-- Section rhythm: claim, then the receipt that proves it, then the undo that makes it safe.
-- Copy voice: short, factual, slightly dry. "It got 4.2% better at your repo this week. Here's the proof. Here's the undo."
-
-## 8. What not to do
-
-Purple-to-blue gradients, glassmorphism stacks, neon glow on everything, emoji-heavy UI, generic "sparkle" AI icons, chat-bubble-only layouts, lottie confetti, stock 3D illustrations.
-
-## 9. Next steps once accepted
-
-1. Update `DESIGN_SYSTEM.md` §1 with these tokens; keep components and motion rules.
-2. `shell/src/styles/tokens.css` plus a token contrast test (F26 M1).
-3. Build the Trace rail and Receipt chip first: they carry the brand and the product promise.
-4. Redraw `docs/design/assets/app-shell-wireframe.svg` in the new language.
+1. Turn the colors, type, and spacing above into `shell/src/styles/tokens.css`.
+2. Build the step row, question box, diff view, and task list as real React components with tests.
+3. Test on the owner's Windows laptop (font rendering, Segoe vs Plex, 125% scaling).

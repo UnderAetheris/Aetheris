@@ -24,7 +24,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: SemVer once
 - Clean-work-tree contract test runs only in CI; artifact check only flags untracked paths.
 
 ### Added
-- `docs/design/BRAND_DIRECTION.md` (brand v0.2 "The Instrument", proposal) with an HTML mockup and rendered preview; `docs/product/MONETIZATION.md` (proposal); `handoff/QUALITY_PASS_2026-10-05.md`.
+- `docs/design/BRAND_DIRECTION.md` (design v0.3 proposal: built from what the app does, plain writing rules) with HTML mockups and rendered light/dark screens; `docs/product/MONETIZATION.md` (proposal); `handoff/QUALITY_PASS_2026-10-05.md`.
 - `.github/workflows/windows-canary.yml` (weekly + manual Windows run, not a required check).
 - `specs/`: per-feature specs F00-F26, template, and full inventory of abilities, manners, hard rules, and open decisions.
 - `AGENTS.md`: operating manual for AI coding agents.

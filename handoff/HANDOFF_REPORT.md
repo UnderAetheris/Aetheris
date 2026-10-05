@@ -36,7 +36,7 @@ Owner laptop: i5-8365U, 8 GB RAM, Intel UHD 620 (no usable GPU), Windows 64-bit,
 - UI: thin React shell (Composer, Queue, TaskDetail, Indicators, ActivityLog, 1s polling).
 - Specs F00-F26, docs, AGENTS.md, handoff (this folder).
 - **CI on `main` is green** (all 11 jobs, Python 3.11 + 3.13) since PR #3 (Milestone 0, 2026-10-05). That PR also fixed three real security holes (shell metacharacter bypass, unscoped `edit_file`/`search_content`, integrity-checker exemptions keyed by bare symbol name) and two honesty bugs (self-repair and recovery drills reporting success they had not measured). Details: `QUALITY_PASS_2026-10-05.md`.
-- Brand direction v0.2 "The Instrument" and a monetization model are **proposed**, awaiting owner sign-off (`docs/design/BRAND_DIRECTION.md`, `docs/product/MONETIZATION.md`).
+- Design direction v0.3 (built from what the app does: steps, one safety check, undo, proven improvement; plain wording) and a monetization model are **proposed**, awaiting owner sign-off (`docs/design/BRAND_DIRECTION.md`, `docs/product/MONETIZATION.md`).
 
 ## 7. How we work
 

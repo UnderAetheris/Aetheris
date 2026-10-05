@@ -1,6 +1,6 @@
 # Design system v0.1
 
-> **Under review:** color and type in this file are superseded by the proposal in [BRAND_DIRECTION.md](BRAND_DIRECTION.md) (D-016, Q11). Components, motion rules, and accessibility rules below still apply.
+> **Under review:** color and type in this file are superseded by the proposal in [BRAND_DIRECTION.md](BRAND_DIRECTION.md) (design v0.3, D-022, Q11). Components, motion rules, and accessibility rules below still apply.
 
 Goal: feels like Linear, Raycast, and Arc had a calm, trustworthy child. Dark-first, quiet, fast, precise. Every pixel earns its place.
 
