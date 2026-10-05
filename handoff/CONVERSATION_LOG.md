@@ -75,3 +75,9 @@ AI added `specs/` F00-F24 + TEMPLATE + INVENTORY (28 abilities, 9 manners, 10 ha
 ### 3.2 Work done
 - **PR #3 Milestone 0 merged**: CI green on all 11 jobs (3.11 + 3.13). Fixed SEC-1 shell metacharacter bypass and `shell=True` on Windows, SEC-2 unscoped `edit_file`/`search_content`, SEC-3 integrity exemptions keyed by bare symbol; HON-1/2 self-repair and recovery drills reporting unmeasured success; pinned ruff; removed recursive tests; Windows canary workflow.
 - **Docs PR**: living spec and reports moved under `docs/`; brand direction v0.2 + rendered mockup; monetization proposal; quality-pass report; handoff refreshed.
+
+### 3.3 Owner feedback on v0.2 design (2026-10-05)
+- "I don't want some overused design or AI generated slop or low effort. I want professionally made design, specially made for that app, like Nothing and GitHub have their UI based on the app it is." Also dislikes the wording/vocabulary used (e.g. "The Instrument", "receipt", "calibration").
+- Response: v0.2 removed. v0.3 derives every visual from what the app does and uses plain wording (see `docs/design/BRAND_DIRECTION.md`, D-022). Two real screens rendered in light and dark for the owner to judge.
+- Lesson for every future model: **no invented feature names, no marketing words, no trend palettes. Show the owner rendered screens, not descriptions.**
+

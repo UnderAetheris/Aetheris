@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Aetheris — task</title>
+<link rel="stylesheet" href="style.css"></head>
+<body class="__THEME__">
+<div class="app">
+  <div class="bar">
+    <div class="logo">
+      <svg width="22" height="12" viewBox="0 0 22 12"><path d="M1 6h20" stroke="currentColor" stroke-width="1.2"/><circle cx="4" cy="6" r="2.4" fill="var(--panel)" stroke="currentColor" stroke-width="1.2"/><rect x="8.5" y="3.5" width="5" height="5" fill="currentColor"/><rect x="16" y="3.5" width="5" height="5" fill="var(--ask)"/></svg>
+      Aetheris
+    </div>
+    <div class="status">
+      <span>Model <b>Gemini 2.5 Flash</b></span>
+      <span>Free requests left today <b class="mono">1,088 / 1,500</b></span>
+      <span>Working in <b class="mono">D:\projects\invoice-tool</b></span>
+    </div>
+    <div class="win"><span><svg width="10" height="10"><path d="M0 5.5h10" stroke="currentColor"/></svg></span><span><svg width="10" height="10"><rect x=".5" y=".5" width="9" height="9" fill="none" stroke="currentColor"/></svg></span><span><svg width="10" height="10"><path d="M.5.5l9 9M9.5.5l-9 9" stroke="currentColor"/></svg></span></div>
+  </div>
+  <div class="main">
+    <aside class="side">
+      <div class="new"><span>New task</span><kbd>Ctrl N</kbd></div>
+      <div class="group"><span>Waiting for you</span><span>1</span></div>
+      <a class="task on wait"><div class="t">Fix the date parsing bug in invoices</div><div class="m">Needs your OK to push</div></a>
+      <div class="group"><span>Running</span><span>1</span></div>
+      <a class="task"><div class="t">Rename "client" to "customer" everywhere</div><div class="m">Step 6 · editing 14 files</div></a>
+      <div class="group"><span>Done today</span><span>4</span></div>
+      <a class="task"><div class="t">Add a CSV export to the reports page</div><div class="m">9:58 · 3 files changed</div></a>
+      <a class="task"><div class="t">Why is startup slow?</div><div class="m">9:31 · answer, no changes</div></a>
+      <a class="task"><div class="t">Clean up old log files in Downloads</div><div class="m">9:12 · 1.4 GB freed · undone</div></a>
+      <a class="task"><div class="t">Summarise yesterday's commits</div><div class="m">8:50 · answer, no changes</div></a>
+      <div class="foot">
+        <a><span>History</span><span class="mono">212</span></a>
+        <a><span>What it learned</span><span class="mono">38</span></a>
+        <a><span>Settings</span></a>
+      </div>
+    </aside>
+
+    <section class="log">
+      <div class="head">
+        <h1>Fix the date parsing bug in invoices</h1>
+        <div class="meta"><span>You asked at 10:41</span><span>7 steps</span><span>2 files changed</span><span>Everything can be undone</span></div>
+      </div>
+      <div class="steps">
+        <div class="row"><span class="time mono">10:41:52</span><span class="mk"><i></i></span>
+          <span class="txt">Read the bug report and 3 files<span class="sub mono">invoice.py, dates.py, test_dates.py</span></span><span class="act"></span></div>
+        <div class="row"><span class="time mono">10:42:05</span><span class="mk"><i></i></span>
+          <span class="txt">Ran the tests<span class="tag">run_tests</span><span class="sub">38 passed, <span class="del">2 failed</span> in test_dates.py</span></span><span class="act"><a>Output</a></span></div>
+        <div class="row"><span class="time mono">10:42:11</span><span class="mk"><i></i></span>
+          <span class="txt">Found the cause: dates like <span class="mono">05/10/2026</span> are read as May 10, but your invoices use day first.</span><span class="act"></span></div>
+        <div class="row sel"><span class="time mono">10:42:30</span><span class="mk"><i class="chg"></i></span>
+          <span class="txt"><b>Changed dates.py</b><span class="tag">edit_file</span><span class="sub mono"><span class="add">+6</span> <span class="del">&minus;2</span></span></span><span class="act"><a>Undo</a></span></div>
+        <div class="row"><span class="time mono">10:42:34</span><span class="mk"><i class="chg"></i></span>
+          <span class="txt"><b>Added a test to test_dates.py</b><span class="tag">edit_file</span><span class="sub mono"><span class="add">+9</span></span></span><span class="act"><a>Undo</a></span></div>
+        <div class="row"><span class="time mono">10:42:49</span><span class="mk"><i class="ok"></i></span>
+          <span class="txt">Ran the tests again<span class="tag">run_tests</span><span class="sub">All 41 passed</span></span><span class="act"><a>Output</a></span></div>
+        <div class="row last"><span class="time mono">10:42:51</span><span class="mk"><i class="ask"></i></span>
+          <span class="txt"><div class="askbox">
+            <div class="q">Can I push this fix to GitHub?</div>
+            <div class="cmd mono">git push origin fix/date-parsing</div>
+            <div class="why">Pushing is outside what I'm allowed to do on my own. It sends the 2 changed files to your repository. I can't undo it from here once it's sent.</div>
+            <div class="btns"><span class="btn primary">Push</span><span class="btn">Not now</span><span class="btn">Always allow pushing to fix/ branches</span></div>
+          </div></span><span class="act"></span></div>
+      </div>
+      <div class="composer">Reply, or tell it what to change<kbd>Enter</kbd></div>
+    </section>
+
+    <aside class="detail">
+      <div class="dh">
+        <div class="k">Step 4 of 7 · 10:42:30</div>
+        <div class="f"><span class="mono">src/invoice_tool/dates.py</span><span class="mono"><span class="add">+6</span> <span class="del">&minus;2</span></span></div>
+        <div class="btns"><span class="btn">Undo this change</span><span class="btn">Open in editor</span></div>
+      </div>
+      <div class="diff">
+        <div class="hunk">@@ parse_invoice_date @@</div>
+        <div class="ln"><span class="n">18</span><span class="s"></span><span class="c">def parse_invoice_date(raw: str) -&gt; date:</span></div>
+        <div class="ln"><span class="n">19</span><span class="s"></span><span class="c">    raw = raw.strip()</span></div>
+        <div class="ln d"><span class="n">20</span><span class="s">-</span><span class="c">    return datetime.strptime(raw, "%m/%d/%Y").date()</span></div>
+        <div class="ln d"><span class="n">21</span><span class="s">-</span><span class="c"></span></div>
+        <div class="ln a"><span class="n">20</span><span class="s">+</span><span class="c">    fmt = settings.date_format or "%d/%m/%Y"</span></div>
+        <div class="ln a"><span class="n">21</span><span class="s">+</span><span class="c">    try:</span></div>
+        <div class="ln a"><span class="n">22</span><span class="s">+</span><span class="c">        return datetime.strptime(raw, fmt).date()</span></div>
+        <div class="ln a"><span class="n">23</span><span class="s">+</span><span class="c">    except ValueError as err:</span></div>
+        <div class="ln a"><span class="n">24</span><span class="s">+</span><span class="c">        raise InvoiceDateError(raw, fmt) from err</span></div>
+        <div class="ln a"><span class="n">25</span><span class="s">+</span><span class="c"></span></div>
+        <div class="ln"><span class="n">26</span><span class="s"></span><span class="c"></span></div>
+        <div class="ln"><span class="n">27</span><span class="s"></span><span class="c">def format_due(d: date) -&gt; str:</span></div>
+        <div class="ln"><span class="n">28</span><span class="s"></span><span class="c">    return d.strftime(settings.date_format)</span></div>
+      </div>
+      <div class="why2"><div class="k">Why this change</div>Your settings already say day-first, but the parser ignored them. It now uses your setting and gives a clear error for bad dates instead of a wrong one.</div>
+    </aside>
+  </div>
+</div>
+</body></html>

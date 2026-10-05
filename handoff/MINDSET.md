@@ -14,3 +14,4 @@ How to think on this project. Read before every session.
 10. **Honest about limits.** If you couldn't run it, say so. If something is impossible (real-time "site under attack" detection, retraining on this laptop), say so and offer the best real alternative.
 11. **Read the gates themselves.** A green check means nothing until you have read what it checks. Tests must never assert their own success or spawn the whole suite.
 12. **Pin your tools.** Linters, actions, and Python versions are pinned so CI only changes when code changes.
+13. **Plain words, real screens.** The owner hates AI-sounding vocabulary and trend-driven design. Name things by what they do, derive visuals from what the app does, and show rendered results.
