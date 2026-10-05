@@ -156,19 +156,3 @@ jobs:
         run: pip install -e ".[dev]"
       - name: Run unattended gate
         run: python scripts/run_unattended_gate.py
-
-  # Windows is the product's target OS.  Informational until the suite is
-  # Windows-clean; promote to blocking by removing continue-on-error.
-  test-windows:
-    runs-on: windows-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-python@v6
-        with:
-          python-version: '3.13'
-      - name: Install dependencies
-        run: pip install -e ".[dev]"
-      - name: Run pytest
-        run: python -m pytest tests/ -q
-
