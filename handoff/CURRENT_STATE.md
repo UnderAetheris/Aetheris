@@ -1,6 +1,6 @@
 # Current state
 
-_As of 2026-10-01._
+_As of 2026-10-05 (end of session 3)._
 
 ## Built (backend, Phase 0)
 
@@ -24,13 +24,20 @@ Free-tier model router (F13), task queue v1 completion (F02), durable learned ke
 
 | ID | Issue | Notes |
 | --- | --- | --- |
-| P0-1 | **CI red on `main`**: lint, test, coverage, repository-integrity, changeset-rollback-contract failing. Gates (reasoning, research, hierarchy, unattended, trace-smoke) pass. | Present before session 2 docs work (docs-only PR #1 showed the same failures; markdown cannot affect ruff). Diagnose from Actions logs or local run. Likely candidates: ruff violations in `tests/`/`scripts/` (Phase 0 report only linted changed files), integrity findings that also fail `tests/test_architecture_integrity.py` (which would explain test + coverage + changeset job together). |
+| ~~P0-1~~ | ~~CI red on `main`~~ | **Resolved** 2026-10-05 by PR #3. Root causes: ruff unpinned with default rules, recursive tests that spawned the whole suite, Python 3.11 `str in Enum`, integrity findings. All 11 jobs green. |
 | P1-1 | `test_output.txt` was tracked as a symlink | Removed in session 2 |
-| P1-2 | Living spec has a timestamped filename with spaces at repo root | Rename with `git mv` locally to keep history: `docs/architecture/LIVING_SPEC.md`, then update links in AGENTS.md, specs/README.md, handoff. |
-| P1-3 | `*_REPORT.md` milestone reports at root | Move with `git mv` to `docs/reports/` |
+| ~~P1-2~~ | ~~Living spec filename at root~~ | Done: `docs/architecture/LIVING_SPEC.md` (git mv, history kept) |
+| ~~P1-3~~ | ~~Reports at root~~ | Done: `docs/reports/` |
 | P1-4 | UI tests not in CI | Blocked on lockfile policy (Q8) |
+| R-1 | Raw `shell` tool still model-facing. Metacharacters now blocked and `shell=False`, but any allowed argv binary runs | Q12; F04 tiers should make it T2 ask-first |
+| R-2 | Windows path not exercised in required CI | `windows-canary.yml` runs weekly/manual; promote to required once green twice |
+| R-3 | Recovery drills S-04..S-07 still report `unknown` (not measured) | Honest now; implement measured runners |
+| R-4 | Coverage gate threshold is modest; several modules untested on error paths | Raise gradually, never lower |
+| R-5 | UI tests not in CI (see P1-4) | Q8 |
+| R-6 | No lockfile for Python deps | Add `uv.lock` or pinned `requirements*.txt` in Phase 1 |
+| R-7 | Brand/design tokens not yet in code | Blocked on Q11 |
 | P2-1 | ClickUp doc "Self-Improving AI Assistant: Master Spec" still exists | Owner deletes manually; GitHub is the source of truth |
 
 ## Verification status of this session
 
-The session had GitHub read/write but **no ability to run pytest/ruff** and no CI log access. All session-2 changes are docs plus deletion of untracked-by-intent artifacts; none touch `src/`, `tests/`, `scripts/`, ledgers, or CI.
+Session 3 ran everything locally in a Linux sandbox (Python 3.13 and 3.11): `ruff check src/ tests/ scripts/` clean, `pytest` 1015 passed / 1 skipped, `scripts/check_architecture_integrity.py --check` clean. GitHub Actions confirmed green on PR #3 and on `main` after merge. Not verified: the Windows canary on a real Windows runner, and the owner's own laptop.

@@ -7,7 +7,11 @@
 | Q3 | "Locker" = secrets vault (assumed), folder locker, or app/PC lock? | Secrets vault | F20 |
 | Q4 | First free providers: Gemini AI Studio, Groq, OpenRouter? Order? | Gemini -> Groq -> OpenRouter | F13 |
 | Q5 | Assistant name (keep "Aetheris"?) and default tone (casual / formal) | Aetheris, concise-casual | F00 |
-| Q6 | You wrote "the best song player and following app, all use cases". Did you mean the best **assistant** / helper app (likely a typo or voice slip), or do you actually want music playback / a social "follow" feature? | Treat as "best assistant app"; no music or social features | Scope |
+| Q6 | You wrote "the best song player and following app, all use cases" (session 2) and "the best AI subtitle generator for songs with all aspects" (session 3). Was that pasted from another project, or do you want music/lyrics/subtitle features inside Aetheris? | Treat as a slip: Aetheris stays a personal assistant; no music or subtitle features | Scope |
 | Q7 | License: MIT, Apache-2.0, or keep private/proprietary for now? | No license file (all rights reserved) | Public release |
 | Q8 | Allow committing `shell/package-lock.json` so UI tests can run in CI with `npm ci`? (Currently forbidden by hygiene tests.) | Keep forbidden; UI CI uses `npm install` | UI CI |
-| Q9 | Monetization direction (open core + paid sync, pro tier, or BYOK free forever)? | Decide after v1 pilot | 1.0 |
+| Q9 | Monetization: accept the proposal in `docs/product/MONETIZATION.md` (free BYOK core, Pro for sync/mobile approvals/AFK budgets)? | Build free core; no billing code before 1.0 | 1.0 |
+| Q10 | (reserved) | | |
+| Q11 | Accept brand v0.2 "The Instrument" (`docs/design/BRAND_DIRECTION.md`, mockup `docs/design/assets/brand-v0.2-home.svg`) instead of the purple v0.1? | Hold F26 M1 tokens until answered | F26 M1 |
+| Q12 | Remove the raw `shell` tool from the default model-facing tool registry (keep typed tools like `run_tests`, `git_status`)? | Keep it, guarded (metachar block, `shell=False`, cwd scoping) | Security posture |
+| Q13 | Re-upload the workspace screenshots you mentioned; they were not available to the session | Proceed without them | Design |

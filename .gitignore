@@ -40,3 +40,4 @@ test_output*.txt
 *.swp
 .DS_Store
 Thumbs.db
+docs/design/mockups/fonts/

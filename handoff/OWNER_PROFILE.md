@@ -1,6 +1,6 @@
 # Owner profile
 
-- **GitHub org/repo:** `UnderAetheris/Aethens` (committer identity seen: `chigu405`)
+- **GitHub org/repo:** `UnderAetheris/Aetheris` (committer identity seen: `chigu405`)
 - **Timezone:** Asia/Calcutta (IST)
 - **Machine:** i5-8365U, 8 GB RAM, Intel UHD 620, Windows 64-bit
 - **Budget:** $0 beyond the AI coding agent subscription. Prefers free tools and free tiers.

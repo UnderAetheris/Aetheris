@@ -19,6 +19,7 @@ Everything a new engineer or AI model needs to continue Aetheris with zero conte
 | [DECISIONS.md](DECISIONS.md) | Decision log (ADR style) |
 | [ROADMAP.md](ROADMAP.md) | Phases and milestones |
 | [OPEN_QUESTIONS.md](OPEN_QUESTIONS.md) | Decisions waiting on the owner |
+| [QUALITY_PASS_2026-10-05.md](QUALITY_PASS_2026-10-05.md) | Session 3 audit: security, honesty, bugs, remaining risks |
 | [snapshots/](snapshots/) | Per-session snapshots |
 | [media/](media/) | Diagrams, wireframes, screenshots |
 

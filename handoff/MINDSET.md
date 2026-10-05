@@ -12,3 +12,5 @@ How to think on this project. Read before every session.
 8. **Free first.** Prefer free, open tools; design for free tiers disappearing.
 9. **Leave a trail.** Update handoff, changelog, and specs every session so any model can continue.
 10. **Honest about limits.** If you couldn't run it, say so. If something is impossible (real-time "site under attack" detection, retraining on this laptop), say so and offer the best real alternative.
+11. **Read the gates themselves.** A green check means nothing until you have read what it checks. Tests must never assert their own success or spawn the whole suite.
+12. **Pin your tools.** Linters, actions, and Python versions are pinned so CI only changes when code changes.

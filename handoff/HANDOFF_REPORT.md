@@ -1,6 +1,6 @@
 # Handoff report
 
-_Last updated: 2026-10-01. Author: AI co-founder (Claude Opus 5.5 via ClickUp Brain, GitHub access to this repo)._
+_Last updated: 2026-10-05 (session 3). Author: AI co-founder (Notion AI agent with a Linux sandbox, local git + pytest + ruff, and GitHub MCP read/write on `UnderAetheris/Aetheris`)._
 
 ## 1. In one paragraph
 
@@ -35,7 +35,8 @@ Owner laptop: i5-8365U, 8 GB RAM, Intel UHD 620 (no usable GPU), Windows 64-bit,
 - Backend Phase 0: complete per README capability table (28 capabilities, most `complete/measured`).
 - UI: thin React shell (Composer, Queue, TaskDetail, Indicators, ActivityLog, 1s polling).
 - Specs F00-F26, docs, AGENTS.md, handoff (this folder).
-- **CI on `main` is red** on lint, test, coverage, repository-integrity, changeset contract. This predates the docs work (a docs-only PR could not break lint). Root cause not yet diagnosed because the session lacked CI log access. **First job of the next session.**
+- **CI on `main` is green** (all 11 jobs, Python 3.11 + 3.13) since PR #3 (Milestone 0, 2026-10-05). That PR also fixed three real security holes (shell metacharacter bypass, unscoped `edit_file`/`search_content`, integrity-checker exemptions keyed by bare symbol name) and two honesty bugs (self-repair and recovery drills reporting success they had not measured). Details: `QUALITY_PASS_2026-10-05.md`.
+- Brand direction v0.2 "The Instrument" and a monetization model are **proposed**, awaiting owner sign-off (`docs/design/BRAND_DIRECTION.md`, `docs/product/MONETIZATION.md`).
 
 ## 7. How we work
 
@@ -43,11 +44,11 @@ Owner laptop: i5-8365U, 8 GB RAM, Intel UHD 620 (no usable GPU), Windows 64-bit,
 
 ## 8. Roadmap (short)
 
-0 Green CI -> 1 F01 + F13 free-model router -> 2 task queue + durable learning -> 3 permission tiers + approvals inbox -> 4 UI design system + layout + live feed -> 5 profile memory + persona -> 6 reports/Level -> 7 curiosity -> 8 AFK learning -> 9 Guardian read-only + vault -> 10 self-code evolution. Full: `ROADMAP.md`.
+~~0 Green CI~~ (done) -> 1 F01 + F13 free-model router -> 2 task queue + durable learning -> 3 permission tiers + approvals inbox -> 4 UI design system + layout + live feed -> 5 profile memory + persona -> 6 reports/Level -> 7 curiosity -> 8 AFK learning -> 9 Guardian read-only + vault -> 10 self-code evolution. Full: `ROADMAP.md`.
 
 ## 9. Decisions waiting on the owner
 
-See `OPEN_QUESTIONS.md`. Top items: AFK amendment to the "no background browsing" non-goal; Guardian ask-first vs never split; meaning of "locker"; first free providers; name/tone; an ambiguous "song player and following app" phrase; license; lockfile policy.
+See `OPEN_QUESTIONS.md`. Top items: accept brand v0.2 (Q11); what "subtitle generator for songs" / "song player" means (Q6); AFK amendment to the "no background browsing" non-goal; Guardian ask-first vs never split; meaning of "locker"; first free providers; name/tone; an ambiguous "song player and following app" phrase; license; lockfile policy; monetization (Q9); removing the raw `shell` tool from the model-facing registry (Q12).
 
 ## 10. Glossary
 
