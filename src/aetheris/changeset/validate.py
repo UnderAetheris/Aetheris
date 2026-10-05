@@ -169,10 +169,11 @@ def validate_change_set(record: ChangeSet | dict[str, Any]) -> ValidationResult:
     if not cs.capability_id:
         errors.append("capability_id must be non-empty")
 
-    if cs.change_kind not in ChangeKind:
+    # isinstance, not ``in``: ``str in Enum`` raises TypeError on Python 3.11.
+    if not isinstance(cs.change_kind, ChangeKind):
         errors.append(f"unknown change_kind: {cs.change_kind}")
 
-    if cs.disposition not in MutationDisposition:
+    if not isinstance(cs.disposition, MutationDisposition):
         errors.append(f"unknown disposition: {cs.disposition}")
 
     if (cs.disposition in _APPEND_ONLY_DISPOSITIONS or cs.change_kind in _RESEARCH_APPEND_KINDS):
