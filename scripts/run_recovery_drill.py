@@ -19,13 +19,27 @@ from aetheris.evaluation.recovery_model import (
     ScenarioVerification,
 )
 from aetheris.evaluation.recovery_verify import (
-    classify_outcome,
+    verify_scenario,
     compute_metrics,
     determine_verdict,
 )
-from aetheris.evaluation.recovery_view import ReadOnlyAuditView, render_report, render_report_json
+from aetheris.evaluation.recovery_view import (
+    ReadOnlyAuditView,
+    render_report,
+    render_report_json,
+    report_from_json,
+    verify_report_consistency,
+)
 from aetheris.trace.model import TraceUnknown, TraceValue
-from recovery_fixtures import ALL_SCENARIOS, RecoveryScenario, SCENARIO_RUNNERS
+
+# Support both ``python scripts/run_recovery_drill.py`` and
+# ``python -m scripts.run_recovery_drill``: make the sibling fixtures module
+# importable without relying on the caller's working directory.
+_SCRIPTS_DIR = Path(__file__).resolve().parent
+if str(_SCRIPTS_DIR) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS_DIR))
+
+from recovery_fixtures import ALL_SCENARIOS, RecoveryScenario, SCENARIO_RUNNERS  # noqa: E402
 
 MAX_SCENARIOS = 50
 MAX_FILES_PER_SCENARIO = 100
@@ -82,38 +96,23 @@ def run_scenario(scenario: RecoveryScenario, root: Path) -> ScenarioVerification
 
     expected = type("Expected", (), {
         "expected_outcome": scenario.expected_outcome,
-        "expected_identity": None,
+        # Only runners that capture a pre-change baseline can support an
+        # "exact" claim.  Everything else stays unknown by construction.
+        "expected_identity": result.get("expected_identity"),
     })()
-
-    classification, failures = classify_outcome(result, expected)
-
-    obs_id = result.get("observed_identity")
-    if obs_id is None:
-        obs_id = TraceValue(state="unknown", value=None, reason="no observed identity", source="runner")
-
-    return ScenarioVerification(
+    observation = dict(result)
+    observation.setdefault("started_monotonic_ns", started)
+    observation.setdefault("finished_monotonic_ns", finished)
+    verification = verify_scenario(
+        observation,
+        expected,
         scenario_id=scenario.scenario_id,
-        classification=classification,
-        receipt_valid=True,
-        change_link_valid=True,
-        restoration_match=obs_id,
-        evidence_preserved=TraceValue(
-            state="known",
-            value=True,
-            reason="evidence preserved in fixture",
-            source="runner",
-        ),
-        authority_delta=0,
-        safety_preserved=all(passed for _, passed in result.get("safety_checks", ())),
-        sequence_valid=TraceValue(state="known", value=True, reason="sequence valid", source="runner"),
-        duration_ns=finished - started,
-        failures=tuple(failures),
-        unknowns=result.get("unknowns", ()),
-        implementation_class=ImplementationClass(scenario.implementation_class),
         rollback_kind=scenario.rollback_kind,
         change_set_id=f"chg_{scenario.scenario_id}",
         receipt_id=f"rcpt_{scenario.scenario_id}",
+        implementation_class=ImplementationClass(scenario.implementation_class),
     )
+    return verification
 
 
 def run_all_scenarios(output_dir: Path | None = None) -> DrillReport:
@@ -165,8 +164,13 @@ def main(argv: list[str] | None = None) -> int:
         try:
             with args.verify_report.open("r", encoding="utf-8") as f:
                 data = json.load(f)
-            view = ReadOnlyAuditView(DrillReport(**data))
-            print(view.render_summary())
+            report = report_from_json(data)
+            problems = verify_report_consistency(report)
+            print(ReadOnlyAuditView(report).render_summary())
+            if problems:
+                for problem in problems:
+                    print(f"INCONSISTENT: {problem}", file=sys.stderr)
+                return 1
             return 0
         except Exception as exc:
             print(f"failed to verify report: {exc}", file=sys.stderr)
@@ -179,7 +183,7 @@ def main(argv: list[str] | None = None) -> int:
         try:
             with args.render.open("r", encoding="utf-8") as f:
                 data = json.load(f)
-            report = DrillReport(**data)
+            report = report_from_json(data)
             if args.format == "json":
                 output = render_report_json(report)
                 print(json.dumps(output, indent=2, sort_keys=True))

@@ -137,7 +137,7 @@ def test_deliberation_immutable_default_on():
     d = Deliberation(seam=__import__("aetheris.reasoning.schema", fromlist=["Seam"]).Seam.PLANNER,
                      subject="x", confidence=0.8)
     with pytest.raises(dataclasses.FrozenInstanceError):
-        setattr(d, "confidence", 0.99)
+        d.confidence = 0.99
 
 
 def test_abstention_still_first_class_default_on():

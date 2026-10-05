@@ -290,66 +290,138 @@ def _sha256_hex(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def _digest_tv(data: bytes, source: str) -> TraceValue:
+    return TraceValue(state="known", value=_sha256_hex(data), reason="sha256 of file bytes", source=source)
+
+
+def _tree_digest(root: Path, exclude: tuple[str, ...] = ()) -> str:
+    """Stable digest over every file (path + bytes) under *root*."""
+    h = hashlib.sha256()
+    for path in sorted(p for p in root.rglob("*") if p.is_file()):
+        rel = path.relative_to(root).as_posix()
+        if any(rel == e or rel.startswith(e + "/") for e in exclude):
+            continue
+        h.update(rel.encode("utf-8") + b"\0" + path.read_bytes() + b"\0")
+    return h.hexdigest()
+
+
 def run_scenario_file_restore(scenario: RecoveryScenario, root: Path) -> dict[str, object]:
+    """S-01: every claim below is measured, not asserted."""
     target = root / "target.txt"
     snapshot = root / "target.txt.snapshot"
     target.write_text("original content", encoding="utf-8")
-    snapshot.write_text(target.read_text(encoding="utf-8"), encoding="utf-8")
-    target.write_text("mutated content", encoding="utf-8")
-    target.write_text(snapshot.read_text(encoding="utf-8"), encoding="utf-8")
-    restored = target.read_text(encoding="utf-8")
-    match = restored == "original content"
+    baseline = target.read_bytes()
+    files_before = sorted(p.name for p in root.iterdir())
+    snapshot.write_bytes(baseline)
+    snapshot_digest_before = _sha256_hex(snapshot.read_bytes())
+
+    target.write_text("mutated content", encoding="utf-8")   # the change
+    mutated = target.read_bytes()
+    target.write_bytes(snapshot.read_bytes())                 # the rollback
+    restored = target.read_bytes()
+
+    files_after = sorted(p.name for p in root.iterdir())
+    snapshot_digest_after = _sha256_hex(snapshot.read_bytes())
+    ok = restored == baseline
     return {
-        "outcome": "succeeded" if match else "failed",
-        "observed_identity": TraceValue(
-            state="known" if match else "mismatch",
-            value=restored,
-            reason="restored content matches original" if match else "content mismatch",
-            source="file_restore",
-        ),
-        "evidence_before": (TraceValue(state="known", value="original content", source="snapshot", reason=""),),
-        "evidence_after": (TraceValue(state="known", value=restored, source="file_restore", reason=""),),
+        "outcome": "succeeded" if ok else "failed",
+        "expected_identity": _digest_tv(baseline, "file_digest"),
+        "observed_identity": _digest_tv(restored, "file_digest"),
+        "evidence_before": (_digest_tv(baseline, "snapshot"),),
+        "evidence_after": (TraceValue(state="known", value=snapshot_digest_after, reason="snapshot digest", source="snapshot"),),
         "authority_before": (),
         "authority_after": (),
-        "safety_checks": (("file_size_unchanged_after_restore", True), ("no_new_files_created", True)),
+        "safety_checks": (
+            ("snapshot_unmodified_by_restore", snapshot_digest_before == snapshot_digest_after),
+            ("no_new_files_created", files_before + ["target.txt.snapshot"] == files_after
+                or sorted(files_before + ["target.txt.snapshot"]) == files_after),
+            ("mutation_actually_happened", mutated != baseline),
+        ),
         "work_units_reused": TraceValue(state="not_applicable", value=None, reason="no work units"),
         "unknowns": (),
     }
 
-
 def run_scenario_git_revert(scenario: RecoveryScenario, root: Path) -> dict[str, object]:
+    """S-02: revert the mutation commit in a hermetic repo; measure the result."""
     import subprocess
     env = os.environ.copy()
-    env["GIT_CONFIG_GLOBAL"] = "/dev/null"
-    env["GIT_CONFIG_SYSTEM"] = "/dev/null"
+    env["GIT_CONFIG_GLOBAL"] = os.devnull
+    env["GIT_CONFIG_SYSTEM"] = os.devnull
     env["GIT_TERMINAL_PROMPT"] = "0"
     env["HOME"] = str(root)
-    subprocess.run(["git", "init"], cwd=root, env=env, capture_output=True, timeout=10, shell=False)
-    subprocess.run(["git", "config", "user.name", "drill-runner"], cwd=root, env=env, capture_output=True, timeout=10, shell=False)
-    subprocess.run(["git", "config", "user.email", "drill@localhost"], cwd=root, env=env, capture_output=True, timeout=10, shell=False)
+
+    def git(*args: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["git", *args], cwd=root, env=env, capture_output=True, text=True,
+            timeout=10, shell=False, check=False,
+        )
+
+    git("init", "-q")
+    git("config", "user.name", "drill-runner")
+    git("config", "user.email", "drill@localhost")
     base_file = root / "base.txt"
     base_file.write_text("baseline content", encoding="utf-8")
-    subprocess.run(["git", "add", "base.txt"], cwd=root, env=env, capture_output=True, timeout=10, shell=False)
-    subprocess.run(["git", "commit", "-m", "baseline"], cwd=root, env=env, capture_output=True, timeout=10, shell=False)
+    baseline = base_file.read_bytes()
+    git("add", "base.txt")
+    git("commit", "-q", "-m", "baseline")
     base_file.write_text("mutated content", encoding="utf-8")
-    subprocess.run(["git", "add", "base.txt"], cwd=root, env=env, capture_output=True, timeout=10, shell=False)
-    subprocess.run(["git", "commit", "-m", "mutation"], cwd=root, env=env, capture_output=True, timeout=10, shell=False)
-    result = subprocess.run(["git", "revert", "--no-edit", "HEAD~1"], cwd=root, env=env, capture_output=True, timeout=10, shell=False)
-    content = base_file.read_text(encoding="utf-8")
-    match = content == "baseline content"
+    git("add", "base.txt")
+    git("commit", "-q", "-m", "mutation")
+    result = git("revert", "--no-edit", "HEAD")
+    restored = base_file.read_bytes()
+    remotes = git("remote").stdout.strip()
+    status_clean = git("status", "--porcelain").stdout.strip() == ""
+    ok = result.returncode == 0 and restored == baseline
     return {
-        "outcome": "succeeded" if (result.returncode == 0 and match) else "failed",
-        "observed_identity": TraceValue(
-            state="known" if match else "mismatch",
-            value=content,
-            reason="file content matches baseline after revert" if match else "content mismatch after revert",
-            source="git_revert",
-        ),
-        "evidence_before": (TraceValue(state="known", value="mutated content", source="mutation_commit", reason=""),),
-        "evidence_after": (TraceValue(state="known", value=content, source="reverted_file", reason=""),),
+        "outcome": "succeeded" if ok else "failed",
+        "expected_identity": _digest_tv(baseline, "file_digest"),
+        "observed_identity": _digest_tv(restored, "file_digest"),
+        "evidence_before": (_digest_tv(baseline, "baseline_commit"),),
+        "evidence_after": (_digest_tv(git("show", "HEAD~2:base.txt").stdout.encode("utf-8"), "baseline_commit"),),
         "authority_before": (),
         "authority_after": (),
-        "safety_checks": (("no_remote_refs_created", True), ("no_global_git_config_mutated", True)),
+        "safety_checks": (
+            ("no_remote_refs_created", remotes == ""),
+            ("work_tree_clean_after_revert", status_clean),
+            ("history_preserved_not_rewritten", git("rev-list", "--count", "HEAD").stdout.strip() == "3"),
+        ),
+        "work_units_reused": TraceValue(state="not_applicable", value=None, reason="no work units"),
+        "unknowns": (),
+    }
+
+def run_scenario_plan_restore(scenario: RecoveryScenario, root: Path) -> dict[str, object]:
+    """S-03: restore a serialized plan snapshot without executing or
+    instantiating the planner.  Uses its own artifact, not S-01's."""
+    plan_file = root / "plan_1.json"
+    snapshot = root / "plan_1.snapshot.json"
+    baseline_plan = {"plan_id": "plan_1", "content": "baseline plan", "steps": [
+        {"tool": "read_file", "arg": "{\"path\": \"a.txt\"}", "status": "pending"},
+    ]}
+    plan_file.write_text(json.dumps(baseline_plan, sort_keys=True), encoding="utf-8")
+    baseline = plan_file.read_bytes()
+    snapshot.write_bytes(baseline)
+
+    modified = dict(baseline_plan, content="modified plan")
+    plan_file.write_text(json.dumps(modified, sort_keys=True), encoding="utf-8")
+    mutated = plan_file.read_bytes()
+    plan_file.write_bytes(snapshot.read_bytes())
+    restored = plan_file.read_bytes()
+
+    restored_plan = json.loads(restored)
+    no_step_executed = all(st["status"] == "pending" for st in restored_plan["steps"])
+    ok = restored == baseline
+    return {
+        "outcome": "succeeded" if ok else "failed",
+        "expected_identity": _digest_tv(baseline, "plan_digest"),
+        "observed_identity": _digest_tv(restored, "plan_digest"),
+        "evidence_before": (_digest_tv(baseline, "plan_snapshot"),),
+        "evidence_after": (_digest_tv(snapshot.read_bytes(), "plan_snapshot"),),
+        "authority_before": (),
+        "authority_after": (),
+        "safety_checks": (
+            ("no_plan_execution", no_step_executed),
+            ("mutation_actually_happened", mutated != baseline),
+        ),
         "work_units_reused": TraceValue(state="not_applicable", value=None, reason="no work units"),
         "unknowns": (),
     }
@@ -400,31 +472,36 @@ def run_scenario_config_disable(scenario: RecoveryScenario, root: Path) -> dict[
 
 
 def run_scenario_sandbox_discard(scenario: RecoveryScenario, root: Path) -> dict[str, object]:
-    sandbox = root / "sandbox"
-    sandbox.mkdir()
-    child_file = sandbox / "child.txt"
-    child_file.write_text("mutated", encoding="utf-8")
+    """S-08: parent state is captured *before* the sandbox exists."""
     import shutil
-    shutil.rmtree(sandbox)
     parent_file = root / "parent.txt"
     parent_file.write_text("unchanged", encoding="utf-8")
+    parent_before = _tree_digest(root)
+
+    sandbox = root / "sandbox"
+    sandbox.mkdir()
+    (sandbox / "child.txt").write_text("mutated", encoding="utf-8")
+    shutil.rmtree(sandbox)
+
+    parent_after = _tree_digest(root)
+    sandbox_absent = not sandbox.exists()
+    ok = sandbox_absent and parent_before == parent_after
+    tree_tv = lambda d: TraceValue(state="known", value=d, reason="tree digest", source="parent_tree")  # noqa: E731
     return {
-        "outcome": "succeeded",
-        "observed_identity": TraceValue(
-            state="known",
-            value={"sandbox_exists": False, "parent_unchanged": True},
-            reason="sandbox discarded, parent unchanged",
-            source="sandbox_discard",
-        ),
-        "evidence_before": (TraceValue(state="known", value="parent.txt exists", source="baseline", reason=""),),
-        "evidence_after": (TraceValue(state="known", value="parent.txt exists", source="post_discard", reason=""),),
+        "outcome": "succeeded" if ok else "failed",
+        "expected_identity": tree_tv(parent_before),
+        "observed_identity": tree_tv(parent_after),
+        "evidence_before": (tree_tv(parent_before),),
+        "evidence_after": (tree_tv(parent_after),),
         "authority_before": (),
         "authority_after": (),
-        "safety_checks": (("no_parent_mutation", True), ("no_symlink_escape", True)),
+        "safety_checks": (
+            ("no_parent_mutation", parent_before == parent_after),
+            ("sandbox_absent_after_discard", sandbox_absent),
+        ),
         "work_units_reused": TraceValue(state="not_applicable", value=None, reason="no work units"),
         "unknowns": (),
     }
-
 
 def run_scenario_checkpoint_recovery(scenario: RecoveryScenario, root: Path) -> dict[str, object]:
     checkpoint = root / "checkpoint.json"
@@ -509,7 +586,7 @@ def run_scenario_failed(scenario: RecoveryScenario, root: Path) -> dict[str, obj
         "outcome": "failed",
         "observed_identity": TraceValue(
             state="mismatch",
-            value="incompatible_snapshot",
+            value={"error": "incompatible_snapshot"},
             reason="restore attempt failed, protected state unchanged",
             source="failed_fixture",
         ),
@@ -548,7 +625,7 @@ def run_scenario_unknown(scenario: RecoveryScenario, root: Path) -> dict[str, ob
 SCENARIO_RUNNERS: dict[str, callable] = {
     "S-01": run_scenario_file_restore,
     "S-02": run_scenario_git_revert,
-    "S-03": run_scenario_file_restore,
+    "S-03": run_scenario_plan_restore,
     "S-06": run_scenario_config_disable,
     "S-07": run_scenario_checkpoint_recovery,
     "S-08": run_scenario_sandbox_discard,

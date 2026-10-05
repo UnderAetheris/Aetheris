@@ -17,6 +17,7 @@ from ..trace.model import (
 )
 from .canonical import change_id, receipt_id
 from .model import (
+    UNKNOWN_FIELD_VALUE,
     ChangeKind,
     ChangeSet,
     InverseReference,
@@ -179,8 +180,22 @@ class ChangeSetProjector:
             authorization_required=_tv("unknown", None, "authorization not captured in source record"),
         )
 
-        cap_id = primary.capability_id if isinstance(primary.capability_id, str) else _tv("unknown", None, "capability_id not captured")
-        auth_class = primary.authority_class if isinstance(primary.authority_class, str) else _tv("unknown", None, "authority_class not captured")
+        # capability_id / authority_class are plain strings in the ChangeSet
+        # schema.  When the source record lacks them we must not leak ``None``
+        # into a ``str`` field: use the explicit UNKNOWN_FIELD_VALUE sentinel
+        # and record a typed TraceUnknown so the gap stays visible.
+        cap_id = primary.capability_id if isinstance(primary.capability_id, str) and primary.capability_id else None
+        auth_class = primary.authority_class if isinstance(primary.authority_class, str) and primary.authority_class else None
+        for field_name, value in (("capability_id", cap_id), ("authority_class", auth_class)):
+            if value is None:
+                unknowns_list.append(TraceUnknown(
+                    code="missing_evidence",
+                    field=field_name,
+                    reason=f"{field_name} not captured in source record",
+                    required_for=("authority_audit",),
+                ))
+        cap_id = cap_id or UNKNOWN_FIELD_VALUE
+        auth_class = auth_class or UNKNOWN_FIELD_VALUE
 
         trace_id = primary.trace_id if isinstance(primary.trace_id, TraceValue) else _tv("known", primary.trace_id or "unknown", "trace_id captured")
         task_id = primary.task_id if isinstance(primary.task_id, TraceValue) else _tv("known", primary.task_id or "unknown", "task_id captured")
@@ -232,11 +247,11 @@ class ChangeSetProjector:
             task_id=task_id,
             session_id=session_id,
             plan_id=plan_id,
-            capability_id=cap_id.value if isinstance(cap_id, TraceValue) else cap_id,
+            capability_id=cap_id,
             owner_subsystem=owner_subsystem,
             change_kind=change_kind,
             disposition=disposition,
-            authority_class=auth_class.value if isinstance(auth_class, TraceValue) else auth_class,
+            authority_class=auth_class,
             target=target,
             before=before,
             after=after,

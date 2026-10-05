@@ -29,7 +29,18 @@
       "allowed_effects": [
         "registered_tool_execution"
       ],
-      "exceptions": []
+      "exceptions": [
+        {
+          "boundary": "execution.safety_layer",
+          "source_path": "src/aetheris/tools/builtins.py",
+          "symbol": "_shell",
+          "call_pattern": "subprocess.run",
+          "reason": "registered shell tool; reachable only through SafetyLayer.run after shell_allowlist (metacharacter ban, allowlist, cwd scoping)",
+          "expected_effect": "argv-form subprocess with shell=False, 10s timeout, cwd inside workspace",
+          "reviewer_owner": "SafetyLayer",
+          "expiry": "no_expiry_reason"
+        }
+      ]
     },
     {
       "id": "network_egress.research_perimeter",
@@ -326,6 +337,82 @@
           "reason": "default HTTP transport for LocalProvider and ApiProvider",
           "expected_effect": "POST to local Ollama or OpenAI-compatible endpoint",
           "reviewer_owner": "LocalProvider",
+          "expiry": "no_expiry_reason"
+        }
+      ]
+    },
+    {
+      "id": "dev_tooling.ci_scripts",
+      "side_effect_class": "dev_tooling",
+      "owner": "maintainers",
+      "entrypoints": [],
+      "allowed_callers": [
+        "ci"
+      ],
+      "allowed_effects": [
+        "hermetic_fixture_execution",
+        "test_execution",
+        "read_only_git_query"
+      ],
+      "exceptions": [
+        {
+          "boundary": "dev_tooling.ci_scripts",
+          "source_path": "scripts/check_architecture_integrity.py",
+          "symbol": "check_artifacts",
+          "call_pattern": "subprocess.run",
+          "reason": "read-only `git ls-files` to detect tracked runtime artifacts",
+          "expected_effect": "read-only git query",
+          "reviewer_owner": "maintainers",
+          "expiry": "no_expiry_reason"
+        },
+        {
+          "boundary": "dev_tooling.ci_scripts",
+          "source_path": "scripts/recovery_fixtures.py",
+          "symbol": "run_scenario_git_revert",
+          "call_pattern": "subprocess.run",
+          "reason": "drill scenario S-02 runs git inside a hermetic temp repo with global/system config disabled",
+          "expected_effect": "git operations confined to a throwaway temp directory",
+          "reviewer_owner": "maintainers",
+          "expiry": "no_expiry_reason"
+        },
+        {
+          "boundary": "dev_tooling.ci_scripts",
+          "source_path": "scripts/recovery_fixtures.py",
+          "symbol": "run_scenario_sandbox_discard",
+          "call_pattern": "shutil.rmtree",
+          "reason": "drill scenario discards a throwaway sandbox inside the hermetic temp root",
+          "expected_effect": "delete fixture-owned temp directory",
+          "reviewer_owner": "maintainers",
+          "expiry": "no_expiry_reason"
+        },
+        {
+          "boundary": "dev_tooling.ci_scripts",
+          "source_path": "scripts/run_hierarchy_gate.py",
+          "symbol": "main",
+          "call_pattern": "subprocess.run",
+          "reason": "CI gate wrapper invoking pytest on a fixed test file",
+          "expected_effect": "runs repository tests; no production state",
+          "reviewer_owner": "maintainers",
+          "expiry": "no_expiry_reason"
+        },
+        {
+          "boundary": "dev_tooling.ci_scripts",
+          "source_path": "scripts/run_research_hardening.py",
+          "symbol": "main",
+          "call_pattern": "subprocess.run",
+          "reason": "CI gate wrapper invoking pytest on a fixed test file",
+          "expected_effect": "runs repository tests; no production state",
+          "reviewer_owner": "maintainers",
+          "expiry": "no_expiry_reason"
+        },
+        {
+          "boundary": "dev_tooling.ci_scripts",
+          "source_path": "scripts/run_unattended_gate.py",
+          "symbol": "main",
+          "call_pattern": "subprocess.run",
+          "reason": "CI gate wrapper invoking pytest on a fixed test file",
+          "expected_effect": "runs repository tests; no production state",
+          "reviewer_owner": "maintainers",
           "expiry": "no_expiry_reason"
         }
       ]

@@ -232,7 +232,7 @@ class AutoSkillSynthesizer:
         if not params:
             return None
         steps: list[SkillStep] = []
-        for plan_step, (tool, deps) in zip(first.steps, shape_key):
+        for plan_step, (tool, deps) in zip(first.steps, shape_key, strict=False):
             arg_template = self._generalize_arg(plan_step.arg, params)
             steps.append(SkillStep(
                 tool=tool, arg_template=arg_template,

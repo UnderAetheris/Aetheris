@@ -335,23 +335,53 @@ def test_na_normalized_to_not_applicable():
         assert rb.get("restores") != "N/A", f"{c['id']} has N/A rollback restores"
 
 
-def test_existing_test_suite_still_passes():
-    result = subprocess.run(
-        [sys.executable, "-m", "pytest", "-q", "--no-header", "-x"],
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-        timeout=900,
-    )
-    assert result.returncode == 0, f"existing tests regressed: {result.stdout}\n{result.stderr}"
+# NOTE: "whole suite still passes" and "lint still passes" are owned by the
+# dedicated ``test`` and ``lint`` CI jobs.  They were previously asserted from
+# inside this test module by spawning ``pytest`` on the full suite, which
+# re-collected this module and recursed without bound.
 
 
-def test_lint_still_passes():
-    result = subprocess.run(
-        [sys.executable, "-m", "ruff", "check", "."],
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-        timeout=120,
+def _load_checker_module():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("checker_scope", str(CHECKER))
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules["checker_scope"] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def test_side_effect_exemption_is_scoped_to_enclosing_entrypoint(tmp_path, monkeypatch):
+    """Regression: registering ``SafetyLayer.run`` must not exempt every
+    ``subprocess.run`` call in the repository (bare-name matching bug)."""
+    mod = _load_checker_module()
+    pkg = tmp_path / "src" / "aetheris" / "safety"
+    pkg.mkdir(parents=True)
+    (pkg / "guard.py").write_text(
+        "import subprocess\n"
+        "class SafetyLayer:\n"
+        "    def run(self):\n"
+        "        subprocess.run(['true'])\n",
+        encoding="utf-8",
     )
-    assert result.returncode == 0, f"lint failed: {result.stdout}\n{result.stderr}"
+    (pkg / "rogue.py").write_text(
+        "import subprocess\n"
+        "def sneaky():\n"
+        "    subprocess.run(['rm', '-rf', '/'])\n",
+        encoding="utf-8",
+    )
+    authority = tmp_path / "authority.json"
+    authority.write_text(json.dumps({"boundaries": [{
+        "id": "execution.safety_layer",
+        "entrypoints": ["aetheris.safety.guard.SafetyLayer.run"],
+        "exceptions": [],
+    }]}), encoding="utf-8")
+    monkeypatch.setattr(mod, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(mod, "SRC_DIR", tmp_path / "src")
+    monkeypatch.setattr(mod, "SCRIPTS_DIR", tmp_path / "scripts")
+    monkeypatch.setattr(mod, "AUTHORITY_PATH", authority)
+
+    findings: list = []
+    mod._scan_ast_for_side_effects(findings)
+    flagged = {(f.path if hasattr(f, "path") else str(f)) for f in findings}
+    assert any("rogue.py" in str(p) for p in flagged), findings
+    assert not any("guard.py" in str(p) for p in flagged), findings

@@ -187,7 +187,7 @@ class TestCautionOnlySchema:
     def test_lessons_are_immutable(self):
         lesson = _sample_lesson()
         with pytest.raises(dataclasses.FrozenInstanceError):
-            setattr(lesson, "confidence", 0.99)
+            lesson.confidence = 0.99
 
 
 # --------------------------------------------------------------------------- #

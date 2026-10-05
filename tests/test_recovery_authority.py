@@ -22,11 +22,11 @@ def _tv(state: str, value: object, reason: str = "", source: str = "test") -> Tr
     if state == "known":
         return TraceValue(state="known", value=value, source=source)
     if state == "unknown":
-        return TraceValue(state="unknown", value=None, reason=reason, source=source)
+        return TraceValue(state="unknown", value=None, reason=reason or "unknown in test", source=source)
     if state == "not_applicable":
-        return TraceValue(state="not_applicable", value=None, reason=reason)
+        return TraceValue(state="not_applicable", value=None, reason=reason or "not applicable in test")
     if state == "mismatch":
-        return TraceValue(state="mismatch", value={"detail": value}, reason=reason, source=source)
+        return TraceValue(state="mismatch", value={"detail": value}, reason=reason or "mismatch in test", source=source)
     raise ValueError(f"unknown state {state}")
 
 
@@ -162,7 +162,7 @@ class TestAppendOnlyEvidencePreserved:
     def test_evidence_not_deleted(self):
         before = (_tv("known", "record1"), _tv("known", "record2"))
         after = (_tv("known", "record1"), _tv("known", "record2"))
-        ok, errors = verify_scenario(
+        ok = verify_scenario(
             type("Obs", (), {
                 "outcome": "not_attempted",
                 "observed_identity": _tv("not_applicable", None),
@@ -179,11 +179,12 @@ class TestAppendOnlyEvidencePreserved:
             scenario_id="S-09",
         )
         assert ok.safety_preserved is True
+        assert ok.evidence_preserved.state == "known" and ok.evidence_preserved.value is True
 
     def test_evidence_not_truncated(self):
         before = (_tv("known", "record1"),)
         after = (_tv("known", "record1"),)
-        ok, errors = verify_scenario(
+        ok = verify_scenario(
             type("Obs", (), {
                 "outcome": "not_attempted",
                 "observed_identity": _tv("not_applicable", None),
@@ -200,6 +201,7 @@ class TestAppendOnlyEvidencePreserved:
             scenario_id="S-09",
         )
         assert ok.safety_preserved is True
+        assert ok.evidence_preserved.state == "known" and ok.evidence_preserved.value is True
 
 
 class TestUnknownRemainsUnknown:
@@ -314,10 +316,28 @@ class TestNoAutomaticProductionRecovery:
         assert "capability" not in source or "no new capability" in source.lower()
 
     def test_harness_does_not_widen_authority_profile(self):
-        import aetheris.evaluation.recovery_model as rm
+        """The recovery model may *measure* authority deltas, but must not
+        import or touch the modules that grant or enforce authority."""
+        import ast
         import inspect
-        source = inspect.getsource(rm)
-        assert "authority" not in source or "no authority" in source.lower() or "no new" in source.lower()
+
+        import aetheris.evaluation.recovery_model as rm
+
+        tree = ast.parse(inspect.getsource(rm))
+        imported: set[str] = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Import):
+                imported.update(alias.name for alias in node.names)
+            elif isinstance(node, ast.ImportFrom):
+                imported.add(("." * node.level) + (node.module or ""))
+        forbidden = ("safety", "tools", "controller", "unattended", "subprocess", "os")
+        offending = sorted(
+            name for name in imported
+            if any(part in forbidden for part in name.strip(".").split("."))
+        )
+        assert offending == [], f"recovery model imports authority-bearing modules: {offending}"
+        # Fields named *authority* must be plain measurement integers / tuples.
+        assert rm.RecoveryMetrics().authority_increase == 0
 
 
 class TestExistingCanariesAndGates:
@@ -384,7 +404,7 @@ class TestNoCheckoutMutationDuringDrill:
             for step in s.steps:
                 for key, val in step.items():
                     if isinstance(val, str) and val.startswith("/"):
-                        assert False, f"{s.scenario_id} step {key} uses absolute path {val}"
+                        raise AssertionError(f"{s.scenario_id} step {key} uses absolute path {val}")
 
     def test_no_network_references_in_scenarios(self):
         for s in ALL_SCENARIOS:

@@ -27,11 +27,11 @@ def _tv(state: str, value: object, reason: str = "", source: str = "test") -> Tr
     if state == "known":
         return TraceValue(state="known", value=value, source=source)
     if state == "unknown":
-        return TraceValue(state="unknown", value=None, reason=reason, source=source)
+        return TraceValue(state="unknown", value=None, reason=reason or "unknown in test", source=source)
     if state == "not_applicable":
-        return TraceValue(state="not_applicable", value=None, reason=reason)
+        return TraceValue(state="not_applicable", value=None, reason=reason or "not applicable in test")
     if state == "mismatch":
-        return TraceValue(state="mismatch", value={"detail": value}, reason=reason, source=source)
+        return TraceValue(state="mismatch", value={"detail": value}, reason=reason or "mismatch in test", source=source)
     raise ValueError(f"unknown state {state}")
 
 

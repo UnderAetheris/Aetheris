@@ -275,7 +275,7 @@ def test_evidence_immutable_and_no_action_field():
                               content_hash="h", perimeter_decision="allowed"),
     ),))
     with pytest.raises(dataclasses.FrozenInstanceError):
-        setattr(b, "overall_confidence", 0.99)
+        b.overall_confidence = 0.99
 
 
 def test_only_egress_path_is_perimeter():

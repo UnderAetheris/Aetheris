@@ -118,7 +118,7 @@ def test_reliability_schema_has_no_egress_or_action_field():
 
 def test_observations_are_immutable():
     with pytest.raises(dataclasses.FrozenInstanceError):
-        setattr(_sample_obs(), "confidence", 0.99)
+        _sample_obs().confidence = 0.99
 
 
 # ===========================================================================

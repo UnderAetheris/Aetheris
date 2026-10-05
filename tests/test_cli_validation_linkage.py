@@ -5,7 +5,27 @@ import json
 import tempfile
 from pathlib import Path
 
-from scripts.inspect_changes import main
+from aetheris.changeset.canonical import change_id, receipt_id
+from scripts.inspect_changes import _coerce_change_set, _coerce_rollback_receipt, main
+
+_KNOWN_DIGEST = {"state": "known", "value": "a" * 64, "source": "test"}
+
+
+def _seal(cs_data: dict, rr_data: dict) -> None:
+    """Give the fixtures real content-addressed ids and verifiable digests.
+
+    Change and receipt ids are derived from content, so hand-written ids
+    like ``chg_test`` are correctly rejected by the validator.
+    """
+    for key in ("observed_post_rollback",):
+        rr_data[key]["hash_algorithm"] = "sha256"
+        rr_data[key]["digest"] = dict(_KNOWN_DIGEST)
+    for key in ("expected", "observed"):
+        rr_data["confirmation"][key]["hash_algorithm"] = "sha256"
+        rr_data["confirmation"][key]["digest"] = dict(_KNOWN_DIGEST)
+    cs_data["change_id"] = change_id(_coerce_change_set(cs_data))
+    rr_data["change_id"] = cs_data["change_id"]
+    rr_data["receipt_id"] = receipt_id(_coerce_rollback_receipt(rr_data))
 
 
 def _write_json(path: Path, data) -> None:
@@ -67,10 +87,17 @@ def test_validate_only_checks_receipt_against_linked_changeset():
     with tempfile.TemporaryDirectory() as tmpdir:
         cs_path = Path(tmpdir) / "changes.json"
         rr_path = Path(tmpdir) / "receipts.json"
+        _seal(cs_data, rr_data)
         _write_json(cs_path, [cs_data])
         _write_json(rr_path, [rr_data])
         rc = main(["--changes", str(cs_path), "--receipts", str(rr_path), "--validate-only"])
         assert rc == 0
+
+        # Tampering with the receipt after sealing must be detected.
+        rr_data["outcome"] = "failed"
+        _write_json(rr_path, [rr_data])
+        rc = main(["--changes", str(cs_path), "--receipts", str(rr_path), "--validate-only"])
+        assert rc != 0
 
 
 def test_validate_only_rejects_unlinked_receipt():

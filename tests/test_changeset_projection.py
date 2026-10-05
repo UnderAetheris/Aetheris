@@ -5,6 +5,7 @@ from typing import Any
 
 
 from aetheris.changeset.model import (
+    UNKNOWN_FIELD_VALUE,
     RollbackKind,
 )
 from aetheris.changeset.projector import (
@@ -249,7 +250,8 @@ def test_missing_capability_id_remains_typed_unknown():
     result = projector.project(MutationEvidence(trace_events=(env,), before_object=None, after_object=None, context=_ctx()))
     assert result.success
     cs = result.records[0]
-    assert isinstance(cs.capability_id, str) or hasattr(cs.capability_id, 'state')
+    assert cs.capability_id == UNKNOWN_FIELD_VALUE
+    assert any(u.field == "capability_id" for u in cs.unknowns)
 
 
 def test_missing_authority_class_remains_typed_unknown():

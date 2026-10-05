@@ -203,10 +203,10 @@ def test_rendered_plan_structurally_identical_to_hand_built(tmp_path):
     # Same types throughout.
     assert type(rendered) is type(hand_built)
     assert all(type(rs) is type(hs)
-               for rs, hs in zip(rendered.steps, hand_built.steps))
+               for rs, hs in zip(rendered.steps, hand_built.steps, strict=True))
 
     # Same DAG structure.
-    for rs, hs in zip(rendered.steps, hand_built.steps):
+    for rs, hs in zip(rendered.steps, hand_built.steps, strict=True):
         assert rs.tool == hs.tool
         assert rs.depends_on == hs.depends_on
 
@@ -372,7 +372,7 @@ def test_no_regression_skills_none_path(tmp_path):
         p_none = planner_no_skills.plan_multi(task, "t")
         p_empty = planner_with_skills.plan_multi(task, "t")
         assert len(p_none.steps) == len(p_empty.steps)
-        for s_none, s_empty in zip(p_none.steps, p_empty.steps):
+        for s_none, s_empty in zip(p_none.steps, p_empty.steps, strict=True):
             assert s_none.tool == s_empty.tool
             assert s_none.depends_on == s_empty.depends_on
         # No skill source on planner-decomposed plans.

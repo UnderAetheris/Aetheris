@@ -176,7 +176,7 @@ def verify_evidence_preserved(
     failures: list[str] = []
     if len(evidence_before) != len(evidence_after):
         failures.append(f"evidence count changed: {len(evidence_before)} -> {len(evidence_after)}")
-    for i, (before, after) in enumerate(zip(evidence_before, evidence_after)):
+    for i, (before, after) in enumerate(zip(evidence_before, evidence_after, strict=False)):
         if _tv_repr(before) != _tv_repr(after):
             failures.append(f"evidence[{i}] changed during rollback")
     return (len(failures) == 0, tuple(failures))

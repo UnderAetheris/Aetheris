@@ -330,7 +330,7 @@ def render_candidate(cand: SkillCandidate, task_id: str) -> MultiStepPlan | None
         steps: list[PlanStep] = []
         for tmpl in cand.steps:
             try:
-                arg = _substitute(tmpl.arg_template, dict(zip(cand.params, ["x"] * len(cand.params))))
+                arg = _substitute(tmpl.arg_template, dict.fromkeys(cand.params, "x"))
             except Exception:
                 return None
             steps.append(PlanStep(
@@ -347,7 +347,7 @@ def render_candidate(cand: SkillCandidate, task_id: str) -> MultiStepPlan | None
 def valid_dag(plan: MultiStepPlan) -> bool:
     """Return True if plan steps form a valid DAG (no cycles, valid deps)."""
     n = len(plan.steps)
-    for i, s in enumerate(plan.steps):
+    for s in plan.steps:
         for d in s.depends_on:
             if not isinstance(d, int) or d < 0 or d >= n:
                 return False

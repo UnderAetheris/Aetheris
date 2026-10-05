@@ -742,7 +742,7 @@ def _cap_per_shape(rows: list[dict[str, Any]]) -> list[SessionOutcomeRecord]:
     for r in rows:
         by_shape.setdefault(r["shape_key"], []).append(r)
     out: list[SessionOutcomeRecord] = []
-    for key, recs in by_shape.items():
+    for recs in by_shape.values():
         recs_sorted = sorted(recs, key=lambda r: (r.get("timestamp", 0.0), r.get("session_id", "")))
         for r in recs_sorted[-HISTORY_CAP:]:
             out.append(SessionOutcomeRecord.from_dict(r))
