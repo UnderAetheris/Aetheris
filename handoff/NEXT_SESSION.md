@@ -33,7 +33,10 @@ Flow: short design note in the PR description, then code + tests, then ledgers (
 - R-3: measured runners for drill scenarios S-04..S-07.
 - R-6: Python lockfile.
 
-## 3. In parallel once Q11 is answered: F26 M1
+## 3. In parallel: F26 M1 (UI target = `docs/design/prototype/`)
+
+Open `docs/design/prototype/aetheris-prototype.html` first and click through it. The real React UI must match it, including the live run view and the writing rules.
+
 
 `shell/src/styles/tokens.css` from `docs/design/BRAND_DIRECTION.md` v0.3 (if accepted; match the mockups in `docs/design/assets/v0.3-*.svg` exactly, including the writing rules) or `DESIGN_SYSTEM.md`, then primitives (Button, Card, Badge, StatusDot, Skeleton, EmptyState, ErrorState, Toast) with Vitest tests. No behavior change. Self-host fonts (OFL), no CDN.
 
