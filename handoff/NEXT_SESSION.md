@@ -1,36 +1,42 @@
 # Next session: start here
 
-## 1. Get CI green (P0-1)
+_Written 2026-10-05, end of session 3. CI on `main` is green; keep it that way._
 
-1. Open GitHub Actions for the latest `main` run, read failing logs for `lint`, `test`, `repository-integrity`.
-   - If you lack log access, ask the owner to run locally and paste output:
-     ```powershell
-     ruff check src/ tests/ scripts/
-     python -m pytest tests/ -q -x
-     python scripts/check_architecture_integrity.py --check
-     ```
-2. Fix lint first (mechanical), then integrity findings, then tests. One PR per root cause.
-3. Do not weaken any gate or test to get green. If a test is wrong, fix it and explain why in the PR.
+## 0. Before anything
 
-## 2. Tidy root (P1-2, P1-3), locally with history
+1. Read `HANDOFF_REPORT.md`, `QUALITY_PASS_2026-10-05.md`, and `OPEN_QUESTIONS.md` (check if the owner answered Q6, Q11, Q12).
+2. Run locally: `ruff check src/ tests/ scripts/`, `python -m pytest -q`, `python scripts/check_architecture_integrity.py --check`. All must be clean before you change anything.
 
-```bash
-git mv "Aetheris Architecture v1.0 (living spec)-20260709161540.md" docs/architecture/LIVING_SPEC.md
-mkdir -p docs/reports
-git mv CHANGESET_IMPLEMENTATION_REPORT.md PHASE0_BLOCKER_FIX_REPORT.md TRACE_REPLAY_IMPLEMENTATION_REPORT.md docs/reports/
-```
-Update links in `AGENTS.md`, `specs/README.md`, `handoff/HANDOFF_REPORT.md`. Run the integrity check (it does not reference these paths, verified 2026-10-01).
+## 1. Phase 1: F13 ModelRouter (main task)
 
-## 3. Start Phase 1 (F01 + F13)
+The pieces already exist in `src/aetheris/model/`:
+- `interface.py`: `ModelRequest`, `ModelResponse`, `ModelProvider` protocol
+- `providers.py`: `MockProvider`, `LocalProvider`, `ApiProvider`, `FallbackProvider` (injectable transport)
+- `config.py`: `ModelConfig.from_env`, `build_provider`
 
-- Read `specs/F13_model_providers_router.md` and existing `src/aetheris/model/`.
-- Design note PR first, then `ModelRouter` with injectable transports, budgets, cache, redaction, `Abstain`.
-- Register nothing new in authority unless the router adds a boundary (it should reuse `network_egress.model_provider`).
+Build `ModelRouter` on top, per `specs/F13_model_providers_router.md`:
+- Roles: `plan`, `patch`, `summarize`, `classify`, each mapped to an ordered provider list.
+- Budgets per provider: requests/minute, requests/day, tokens/day; persisted daily counters with an injectable clock.
+- Fallback on 429 / 5xx / timeout; when everything is down or over budget, return a typed `Abstain` (never raise into the controller, never fake an answer).
+- Prompt-hash cache (sha256 of role + normalized prompt + model id), size-bounded.
+- Redaction before send (API keys, tokens, emails, home paths) with a test that inspects the transport payload.
+- Reuse the existing boundary `network_egress.model_provider` in `architecture/authority.json`. Do not add a new boundary unless unavoidable.
+- Default **off** in `Config` and `capabilities.json`; off-path byte-identical.
+- Tests (hermetic, fake transport): `test_fallback_on_429`, `test_all_down_abstains`, `test_daily_budget_enforced`, `test_secrets_redacted_before_send`, `test_cache_hit_skips_network`, plus off-path identity.
+- Provider order default: Gemini AI Studio -> Groq -> OpenRouter free (Q4).
 
-## 4. In parallel: F26 M1
+Flow: short design note in the PR description, then code + tests, then ledgers (`capabilities.json`, README table via `--render-readme`), CHANGELOG, handoff.
 
-- `shell/src/styles/tokens.css` from `docs/design/DESIGN_SYSTEM.md`, primitives (Button, Card, Badge, StatusDot, Skeleton, EmptyState, ErrorState, Toast) with Vitest tests. No behavior change.
+## 2. Follow-ups from the quality pass
 
-## 5. End of session
+- R-1: if Q12 approved, remove `shell` from the default model-facing tool registry (keep it for internal callers).
+- R-3: measured runners for drill scenarios S-04..S-07.
+- R-6: Python lockfile.
 
-Update `CURRENT_STATE.md`, this file, `CHANGELOG.md`, and add `snapshots/YYYY-MM-DD_session-N.md`.
+## 3. In parallel once Q11 is answered: F26 M1
+
+`shell/src/styles/tokens.css` from `docs/design/BRAND_DIRECTION.md` (if accepted) or `DESIGN_SYSTEM.md`, then primitives (Button, Card, Badge, StatusDot, Skeleton, EmptyState, ErrorState, Toast) with Vitest tests. No behavior change. Self-host fonts (OFL), no CDN.
+
+## 4. End of session
+
+Update `CURRENT_STATE.md`, this file, `CHANGELOG.md`, `CONVERSATION_LOG.md`, and add `snapshots/YYYY-MM-DD_session-N.md`.

@@ -2,7 +2,7 @@
 
 | Phase | Goal | Specs | Exit criteria |
 | --- | --- | --- | --- |
-| **0.9 Stabilize** | Green CI on main; tidy root (git mv living spec + reports) | F24 | All CI jobs green |
+| ~~**0.9 Stabilize**~~ | Green CI on main; tidy root | F24 | **Done 2026-10-05** (PR #3 + docs PR) |
 | **1 Brain** | Works on the owner's laptop with free models | F01, F13 | Router with Gemini/Groq/OpenRouter fallback, budgets, cache, redaction; deterministic path works with no provider |
 | **2 Durable core** | Backlog and learning survive restarts | F02, F08 | Persistent queue with priority/retries; keywords persisted; `revert_last()` |
 | **3 Trust** | New powers can exist safely | F04 | Tiers T0-T3, approvals inbox API, protected path list enforced |

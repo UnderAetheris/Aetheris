@@ -19,10 +19,13 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: SemVer once
 - Stale test fixtures (hand-written content-addressed ids, invalid `TraceValue`s, tests that passed for the wrong reason).
 
 ### Changed
+- Living spec moved to `docs/architecture/LIVING_SPEC.md`; milestone reports moved to `docs/reports/` (history preserved).
 - Lint: ruff is pinned (`0.16.10`) and the rule set is explicit (`E4,E7,E9,F,B`). The previous 476 findings came entirely from an unpinned ruff upgrade changing default rules.
 - Clean-work-tree contract test runs only in CI; artifact check only flags untracked paths.
 
 ### Added
+- `docs/design/BRAND_DIRECTION.md` (brand v0.2 "The Instrument", proposal) with an HTML mockup and rendered preview; `docs/product/MONETIZATION.md` (proposal); `handoff/QUALITY_PASS_2026-10-05.md`.
+- `.github/workflows/windows-canary.yml` (weekly + manual Windows run, not a required check).
 - `specs/`: per-feature specs F00-F26, template, and full inventory of abilities, manners, hard rules, and open decisions.
 - `AGENTS.md`: operating manual for AI coding agents.
 - `handoff/`: session continuity package (handoff report, conversation log, decisions, current state, roadmap, open questions, mindset).
@@ -35,4 +38,4 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: SemVer once
 
 ## Phase 0 history (pre-changelog)
 
-Foundation milestones, see the living spec and `*_REPORT.md` files: controller, safety layer, tools, planner, evaluation, memory, learning v0, reasoning (default-on), hierarchy (default-off), research engine + perimeter (default-on), reliability learning, unattended supervisor (default-off), correctness hardening, architecture integrity baseline, trace replay, changeset rollback receipts, recovery drill harness.
+Foundation milestones, see `docs/architecture/LIVING_SPEC.md` and `docs/reports/`: controller, safety layer, tools, planner, evaluation, memory, learning v0, reasoning (default-on), hierarchy (default-off), research engine + perimeter (default-on), reliability learning, unattended supervisor (default-off), correctness hardening, architecture integrity baseline, trace replay, changeset rollback receipts, recovery drill harness.

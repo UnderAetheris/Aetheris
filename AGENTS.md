@@ -21,7 +21,7 @@ It is **not** a chatbot wrapper, not an unbounded autonomous agent, not a monoli
 ## 2. Sources of truth (tiebreak order)
 
 1. `architecture/ARCHITECTURE_BASELINE.md` + `architecture/authority.json` + `architecture/capabilities.json` (machine-checked in CI)
-2. `Aetheris Architecture v1.0 (living spec)-20260709161540.md` (design history and invariants)
+2. `docs/architecture/LIVING_SPEC.md` (design history and invariants)
 3. `specs/FXX_*.md` (per-feature contracts)
 4. `docs/` (product, design, engineering guides)
 5. `handoff/` (context and progress, never overrides 1-4)
@@ -115,7 +115,12 @@ npm run build
 - `*.jsonl`, `.env`, `node_modules/`, `package-lock.json`, `tmp_smoke*`, `wf_*` must never be tracked (`tests/test_repository_hygiene.py`). Do not name files with these substrings.
 - The README capability table between `<!-- architecture-capabilities:start -->` markers is generated. Never hand-edit it; run `--render-readme`.
 - `Config` defaults must match `capabilities.json` `runtime_default.state` or the integrity check fails.
-- CI uses Python 3.11; write 3.11-compatible code.
+- CI runs Python 3.11 and 3.13; write 3.11-compatible code. On 3.11 `"x" in SomeEnum` raises for non-members; use `isinstance` or a value set.
+- ruff is pinned with explicit rules in `pyproject.toml`. Bump it deliberately in its own PR.
+- Never spawn the full test suite or the linter from inside a test (it recurses and doubles CI time).
+- `ci.yml` must not contain `continue-on-error`; soft checks go in separate workflows (see `windows-canary.yml`).
+- Drill, repair, and gate results must be measured. If a runner cannot measure, it reports `unknown`, never success.
+- On Windows the tools run with `shell=False`: shell built-ins (`dir`, `echo`, pipes, redirects) are not available, by design.
 - The owner's machine is an 8 GB, no-GPU Windows laptop. Keep memory use streaming and small; no heavy local models; no Docker Desktop assumptions.
 
 ## 8. Code standards

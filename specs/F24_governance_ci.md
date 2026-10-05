@@ -17,8 +17,8 @@ Make current truth executable: every capability, authority, boundary, and defaul
 5. `--render-readme` to sync the table
 
 ## 4. Repo hygiene notes (observed)
-- Root has `test_output.txt`, `test_output3.txt`, `fix_phase0_blockers.py` and several `*_REPORT.md` files. Consider moving reports to `docs/reports/` and deleting stray outputs so `test_repository_hygiene.py` stays meaningful
-- `.idea/` and `.kilo/` are tracked; consider gitignoring editor/agent folders
+- Done 2026-10-05: stray outputs deleted (session 2); reports moved to `docs/reports/`, living spec to `docs/architecture/LIVING_SPEC.md` (session 3).
+- `.idea/` removed (session 2); `.kilo/` still tracked, consider gitignoring
 
 ## 5. Tests to add
 `test_specs_index_matches_capabilities_ledger` (every spec ID with status built appears in the ledger).

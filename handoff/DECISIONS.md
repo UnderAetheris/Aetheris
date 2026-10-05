@@ -19,3 +19,9 @@ Format: ID, date, decision, why, status. Newest last.
 | D-013 | 2026-10-01 | UI stack: React + Vite + TS (existing) + React Router + TanStack Query + SSE + Framer Motion + cmdk + Lucide; Tauri later | Light, proven, fits 8 GB | Proposed |
 | D-014 | 2026-10-01 | Design language: dark-first, purple accent `#7C5CFF`, semantic color, motion only for state change | Calm, trustworthy, premium | Proposed |
 | D-015 | 2026-10-01 | Positioning: "the personal AI that gets better and proves it"; wedge = proven improvement + visible safety + PC care + $0 | Competitive research | Proposed |
+| D-016 | 2026-10-05 | Brand v0.2 "The Instrument": graphite/bone base, chartreuse `--signal #C8FF3D` identity, semantic pass/attend/block/research colors, Instrument Sans + JetBrains Mono + Newsreader; supersedes D-014 if accepted | Purple-on-dark reads as generic AI app; an instrument/receipt look fits "proves it" | **Pending owner** (Q11) |
+| D-017 | 2026-10-05 | ruff pinned (0.16.10) with explicit rules `E4,E7,E9,F,B`, target py311 | Unpinned ruff with default rules made CI red without code changes | Accepted |
+| D-018 | 2026-10-05 | Windows canary workflow is separate (weekly + manual); `ci.yml` forbids `continue-on-error` | Required checks must never be soft; Windows signal still needed | Accepted |
+| D-019 | 2026-10-05 | Monetization: free-forever BYOK core; Pro (~$8/mo, ₹299) for sync, mobile approvals, AFK budgets, skill packs; never paywall safety, undo, or export | Fair, $0 to run, matches positioning | **Pending owner** (Q9) |
+| D-020 | 2026-10-05 | Drill and self-repair claims must be measured; otherwise report `unknown` | Earlier runners hardcoded success | Accepted |
+| D-021 | 2026-10-05 | Quality-pass method: read gates themselves, reproduce locally on 3.11 and 3.13, fix root causes, never weaken a test | See `QUALITY_PASS_2026-10-05.md` | Accepted |
