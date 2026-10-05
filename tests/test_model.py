@@ -1,3 +1,4 @@
+import dataclasses
 import pytest
 
 from aetheris.model import (
@@ -80,11 +81,11 @@ def test_fallback_provider_name():
 
 def test_model_request_frozen():
     req = ModelRequest(kind=ResponseKind.CHAT, task="hi")
-    with pytest.raises(Exception):  # FrozenDataclassError or similar
+    with pytest.raises(dataclasses.FrozenInstanceError):
         req.task = "bye"
 
 
 def test_model_response_frozen():
     resp = ModelResponse(kind=ResponseKind.CHAT, text="hello")
-    with pytest.raises(Exception):
+    with pytest.raises(dataclasses.FrozenInstanceError):
         resp.text = "goodbye"

@@ -9,7 +9,13 @@ from ..memory.store import MemoryStore
 from ..tools.base import Tool
 
 
-FILESYSTEM_TOOLS = {"read_file", "list_dir", "write_file"}
+FILESYSTEM_TOOLS = {"read_file", "list_dir", "write_file", "edit_file", "search_content"}
+SHELL_TOOLS = {"shell", "run_tests", "run_check"}
+
+#: Characters that let a single "allowlisted" command chain, redirect,
+#: substitute, or expand into something else under cmd.exe, PowerShell,
+#: or POSIX shells.  Commands containing any of them are refused outright.
+SHELL_METACHARACTERS = frozenset("&|;<>`$%^(){}\n\r")
 
 
 @dataclass(frozen=True)
@@ -56,6 +62,15 @@ def _safe_mode_rule(request: ActionRequest, safe_mode: bool) -> Decision | None:
     return None
 
 
+def _within_root(target: Path, root: Path) -> Decision | None:
+    if target != root and root not in target.parents:
+        return Decision(
+            allowed=False,
+            reason=f"path '{target}' escapes workspace root '{root}'",
+        )
+    return None
+
+
 def path_within_root(workspace_root: str) -> Rule:
     """Block filesystem tools whose target path escapes the workspace root."""
     root = Path(workspace_root).resolve()
@@ -64,32 +79,51 @@ def path_within_root(workspace_root: str) -> Rule:
         if request.tool not in FILESYSTEM_TOOLS:
             return None
         try:
-            target = Path(json.loads(request.arg)["path"]).resolve()
-        except (ValueError, KeyError, TypeError):
+            data = json.loads(request.arg)
+            raw = data.get("path", ".") if request.tool == "search_content" else data["path"]
+            target = Path(raw).resolve()
+        except (ValueError, KeyError, TypeError, AttributeError):
             return Decision(allowed=False, reason="invalid argument: expected JSON with 'path'")
-        if target != root and root not in target.parents:
-            return Decision(
-                allowed=False,
-                reason=f"path '{target}' escapes workspace root '{root}'",
-            )
-        return None
+        return _within_root(target, root)
 
     return rule
 
 
-def shell_allowlist(allowed: tuple[str, ...]) -> Rule:
-    """Block shell/test/lint commands whose first token isn't in the allowlist."""
+def shell_allowlist(allowed: tuple[str, ...], workspace_root: str = ".") -> Rule:
+    """Gate shell/test/lint commands.
+
+    A command is allowed only if it (1) contains no shell metacharacters,
+    (2) starts with an allowlisted executable, and (3) runs with a working
+    directory inside the workspace root.  Checking only the first token is
+    not enough: ``echo hi & del ...`` starts with ``echo``.
+    """
+    root = Path(workspace_root).resolve()
 
     def rule(request: ActionRequest, safe_mode: bool) -> Decision | None:
-        if request.tool not in ("shell", "run_tests", "run_check"):
+        if request.tool not in SHELL_TOOLS:
             return None
         try:
-            cmd = json.loads(request.arg)["cmd"]
+            data = json.loads(request.arg)
+            cmd = data["cmd"]
+            if not isinstance(cmd, str):
+                raise TypeError("cmd must be a string")
         except (ValueError, KeyError, TypeError):
             return Decision(allowed=False, reason="invalid argument: expected JSON with 'cmd'")
+        bad = sorted({c for c in cmd if c in SHELL_METACHARACTERS})
+        if bad:
+            return Decision(
+                allowed=False,
+                reason=f"command contains forbidden shell metacharacters: {bad!r}",
+            )
         head = (cmd.split() or [""])[0]
         if head not in allowed:
             return Decision(allowed=False, reason=f"command '{head}' not in shell allowlist")
+        cwd = data.get("cwd")
+        if cwd is not None:
+            try:
+                return _within_root(Path(cwd).resolve(), root)
+            except (TypeError, ValueError):
+                return Decision(allowed=False, reason="invalid argument: 'cwd' must be a path")
         return None
 
     return rule
@@ -103,7 +137,7 @@ def build_default_rules(
     return [
         _safe_mode_rule,
         path_within_root(workspace_root),
-        shell_allowlist(allowed_shell_commands),
+        shell_allowlist(allowed_shell_commands, workspace_root),
     ]
 
 

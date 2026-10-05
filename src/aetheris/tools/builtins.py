@@ -108,12 +108,19 @@ def _shell(arg: str) -> str:
     data = json.loads(arg)
     cmd = data["cmd"]
     cwd = data.get("cwd")
-    if os.name == "nt":
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=10, shell=True, cwd=cwd)
-    else:
+    # Never invoke a shell: with shell=True, cmd.exe would interpret
+    # ``&``, ``|``, ``>`` etc. and turn one allowlisted command into many.
+    argv = shlex.split(cmd, posix=os.name != "nt")
+    if not argv:
+        return "error: empty command"
+    try:
         proc = subprocess.run(
-            shlex.split(cmd), capture_output=True, text=True, timeout=10, cwd=cwd
+            argv, capture_output=True, text=True, timeout=10, cwd=cwd, shell=False
         )
+    except FileNotFoundError:
+        return f"error: executable not found: {argv[0]}"
+    except subprocess.TimeoutExpired:
+        return "error: command timed out after 10s"
     return (proc.stdout + proc.stderr).strip()
 
 

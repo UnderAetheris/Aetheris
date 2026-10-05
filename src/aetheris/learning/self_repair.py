@@ -77,7 +77,7 @@ class SelfRepair:
                     reasons.append(reason)
 
         counter: dict[str, int] = {}
-        for r in reasons:
+        for reason in reasons:
             # Normalise: strip paths, ids, timestamps.
             normalised = self._normalise(reason)
             counter[normalised] = counter.get(normalised, 0) + 1

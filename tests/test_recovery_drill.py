@@ -33,11 +33,11 @@ def _tv(state: str, value: object, reason: str = "", source: str = "test") -> Tr
     if state == "known":
         return TraceValue(state="known", value=value, source=source)
     if state == "unknown":
-        return TraceValue(state="unknown", value=None, reason=reason, source=source)
+        return TraceValue(state="unknown", value=None, reason=reason or "unknown in test", source=source)
     if state == "not_applicable":
-        return TraceValue(state="not_applicable", value=None, reason=reason)
+        return TraceValue(state="not_applicable", value=None, reason=reason or "not applicable in test")
     if state == "mismatch":
-        return TraceValue(state="mismatch", value={"detail": value}, reason=reason, source=source)
+        return TraceValue(state="mismatch", value={"detail": value}, reason=reason or "mismatch in test", source=source)
     raise ValueError(f"unknown state {state}")
 
 
@@ -124,7 +124,7 @@ class TestFileRestoreScenario:
             root = Path(tmpdir)
             from recovery_fixtures import run_scenario_file_restore
             result = run_scenario_file_restore(scenario, root)
-            for name, passed in result["safety_checks"]:
+            for _name, passed in result["safety_checks"]:
                 assert passed is True
 
 
@@ -144,7 +144,7 @@ class TestGitRevertScenario:
             root = Path(tmpdir)
             from recovery_fixtures import run_scenario_git_revert
             result = run_scenario_git_revert(scenario, root)
-            for name, passed in result["safety_checks"]:
+            for _name, passed in result["safety_checks"]:
                 assert passed is True
 
 
@@ -163,7 +163,7 @@ class TestConfigDisableScenario:
             root = Path(tmpdir)
             from recovery_fixtures import run_scenario_config_disable
             result = run_scenario_config_disable(scenario, root)
-            for name, passed in result["safety_checks"]:
+            for _name, passed in result["safety_checks"]:
                 assert passed is True
 
 
@@ -182,10 +182,11 @@ class TestSandboxDiscardScenario:
             root = Path(tmpdir)
             from recovery_fixtures import run_scenario_sandbox_discard
             result = run_scenario_sandbox_discard(scenario, root)
-            obs = result["observed_identity"]
-            assert obs.state == "known"
-            assert obs.value is not None
-            assert obs.value.get("sandbox_exists") is False
+            assert result["outcome"] == "succeeded"
+            assert dict(result["safety_checks"])["sandbox_absent_after_discard"] is True
+            assert not (root / "sandbox").exists()
+            # Parent tree identity is measured before and after, not asserted.
+            assert result["observed_identity"] == result["expected_identity"]
 
 
 class TestAppendOnlyNoopScenario:
@@ -224,7 +225,7 @@ class TestMultiStepScenario:
             root = Path(tmpdir)
             from recovery_fixtures import run_scenario_multi_step
             result = run_scenario_multi_step(scenario, root)
-            for name, passed in result["safety_checks"]:
+            for _name, passed in result["safety_checks"]:
                 assert passed is True
 
 
@@ -261,7 +262,7 @@ class TestBlockedScenario:
             root = Path(tmpdir)
             from recovery_fixtures import run_scenario_blocked
             result = run_scenario_blocked(scenario, root)
-            for name, passed in result["safety_checks"]:
+            for _name, passed in result["safety_checks"]:
                 assert passed is True
 
 
@@ -280,7 +281,7 @@ class TestFailedScenario:
             root = Path(tmpdir)
             from recovery_fixtures import run_scenario_failed
             result = run_scenario_failed(scenario, root)
-            for name, passed in result["safety_checks"]:
+            for _name, passed in result["safety_checks"]:
                 assert passed is True
 
 
@@ -592,6 +593,7 @@ class TestReadOnlyAuditView:
             candidate_revision="abc123",
             scenario_results=(v,),
             metrics=RecoveryMetrics(exact_count=1, total_attempted=1),
+            verdict="pass",
         )
         data = render_report_json(report)
         assert isinstance(data, dict)
@@ -618,6 +620,7 @@ class TestReadOnlyAuditView:
             candidate_revision="abc123",
             scenario_results=(v,),
             metrics=RecoveryMetrics(exact_count=1, total_attempted=1),
+            verdict="pass",
         )
         view = ReadOnlyAuditView(report)
         _ = view.render_summary()
@@ -875,3 +878,29 @@ class TestNoNewRuntimeAuthority:
         ]
         for mod_name in harness_modules:
             assert mod_name not in str(aetheris.__file__)
+
+
+class TestDrillClaimsAreMeasured:
+    """Regression: drill runners used to hardcode their own success."""
+
+    def test_s03_does_not_reuse_file_restore_runner(self):
+        from recovery_fixtures import SCENARIO_RUNNERS
+        assert SCENARIO_RUNNERS["S-03"] is not SCENARIO_RUNNERS["S-01"]
+
+    def test_tampered_restore_is_not_exact(self, monkeypatch):
+        """If the restore silently fails, the drill must not report exact."""
+        import recovery_fixtures as rf
+        from run_recovery_drill import run_scenario
+
+        real_write_bytes = Path.write_bytes
+
+        def broken_restore(self, data):
+            if self.name == "target.txt":
+                data = b"corrupted during restore"
+            return real_write_bytes(self, data)
+
+        monkeypatch.setattr(Path, "write_bytes", broken_restore)
+        with tempfile.TemporaryDirectory(prefix="recovery_drill_") as tmpdir:
+            v = run_scenario(rf.SCENARIO_MAP["S-01"], Path(tmpdir))
+        assert v.classification != "exact"
+

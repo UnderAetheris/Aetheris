@@ -233,7 +233,7 @@ def test_evidence_immutable_and_no_action_field():
         fields = {f.name for f in dataclasses.fields(T)}
         assert not (fields & {"step", "tool", "command", "edit", "post", "plan", "execute"})
     with pytest.raises(dataclasses.FrozenInstanceError):
-        setattr(doc_bundle(), "overall_confidence", 0.99)
+        doc_bundle().overall_confidence = 0.99
 
 
 def test_only_egress_path_is_perimeter():

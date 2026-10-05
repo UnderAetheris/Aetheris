@@ -163,7 +163,7 @@ def test_evidence_schema_no_action_field_default_on():
 
 def test_evidence_immutable_default_on():
     with pytest.raises(dataclasses.FrozenInstanceError):
-        setattr(_sample_bundle(), "overall_confidence", 0.99)
+        _sample_bundle().overall_confidence = 0.99
 
 
 def test_only_egress_path_is_perimeter_default_on(tmp_path):

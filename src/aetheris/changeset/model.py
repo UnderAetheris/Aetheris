@@ -63,6 +63,11 @@ class RollbackOutcome(str, Enum):
     UNKNOWN = "unknown"
 
 
+#: Explicit placeholder for a required string field whose value was not
+#: captured.  Always paired with a TraceUnknown naming the field.
+UNKNOWN_FIELD_VALUE = "<unknown>"
+
+
 @dataclass(frozen=True)
 class ObjectIdentity:
     object_type: str

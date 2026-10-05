@@ -6,12 +6,29 @@ from __future__ import annotations
 
 from typing import Any
 
+from dataclasses import fields
+
 from .recovery_model import (
     DrillReport,
+    ImplementationClass,
     RecoveryMetrics,
     ScenarioVerification,
 )
-from ..trace.model import TraceValue
+from ..trace.model import TraceUnknown, TraceValue
+
+
+def _tv_json(tv: TraceValue) -> dict[str, Any]:
+    return {"state": tv.state, "value": tv.value, "reason": tv.reason, "source": tv.source}
+
+
+def _unknown_json(u: TraceUnknown) -> dict[str, Any]:
+    return {
+        "code": u.code,
+        "field": u.field,
+        "reason": u.reason,
+        "required_for": list(u.required_for),
+        "source_locator": u.source_locator,
+    }
 
 
 def _tv_display(tv: TraceValue | None) -> str:
@@ -133,8 +150,7 @@ def render_report_json(report: DrillReport) -> dict[str, Any]:
         "unsafe_attempts": report.unsafe_attempts,
         "regressions": list(report.regressions),
         "unknowns": [
-            {"code": u.code, "field": u.field, "reason": u.reason, "required_for": list(u.required_for)}
-            for u in report.unknowns
+            _unknown_json(u) for u in report.unknowns
         ],
         "scenario_results": [
             {
@@ -146,22 +162,23 @@ def render_report_json(report: DrillReport) -> dict[str, Any]:
                 "receipt_id": v.receipt_id,
                 "receipt_valid": v.receipt_valid,
                 "change_link_valid": v.change_link_valid,
-                "restoration_match": {"state": v.restoration_match.state, "value": v.restoration_match.value},
-                "evidence_preserved": {"state": v.evidence_preserved.state, "value": v.evidence_preserved.value},
+                "restoration_match": _tv_json(v.restoration_match),
+                "evidence_preserved": _tv_json(v.evidence_preserved),
                 "authority_delta": v.authority_delta,
                 "safety_preserved": v.safety_preserved,
-                "sequence_valid": {"state": v.sequence_valid.state, "value": v.sequence_valid.value},
+                "sequence_valid": _tv_json(v.sequence_valid),
                 "duration_ns": v.duration_ns,
                 "failures": list(v.failures),
                 "unknowns": [
-                    {"code": u.code, "field": u.field, "reason": u.reason, "required_for": list(u.required_for)}
-                    for u in v.unknowns
+                    _unknown_json(u) for u in v.unknowns
                 ],
             }
             for v in report.scenario_results
         ],
         "metrics": {
             "total_attempted": report.metrics.total_attempted,
+            "exact_eligible_attempted": report.metrics.exact_eligible_attempted,
+            "regressions": list(report.metrics.regressions),
             "exact_count": report.metrics.exact_count,
             "partial_count": report.metrics.partial_count,
             "blocked_count": report.metrics.blocked_count,
@@ -226,3 +243,127 @@ class ReadOnlyAuditView:
 
     def render_json(self) -> dict[str, Any]:
         return render_report_json(self._report)
+
+
+# ---------------------------------------------------------------------------
+# JSON -> DrillReport (strict inverse of render_report_json)
+# ---------------------------------------------------------------------------
+
+class ReportFormatError(ValueError):
+    """Raised when a serialized drill report is malformed."""
+
+
+def _require(data: dict[str, Any], key: str, where: str) -> Any:
+    if not isinstance(data, dict) or key not in data:
+        raise ReportFormatError(f"{where}: missing required key {key!r}")
+    return data[key]
+
+
+def _tv_from_json(data: Any, where: str) -> TraceValue:
+    if not isinstance(data, dict):
+        raise ReportFormatError(f"{where}: expected object, got {type(data).__name__}")
+    try:
+        return TraceValue(
+            state=_require(data, "state", where),
+            value=data.get("value"),
+            reason=data.get("reason"),
+            source=data.get("source"),
+        )
+    except ValueError as exc:  # invalid TraceValue invariants
+        raise ReportFormatError(f"{where}: {exc}") from exc
+
+
+def _unknown_from_json(data: Any, where: str) -> TraceUnknown:
+    return TraceUnknown(
+        code=_require(data, "code", where),
+        field=_require(data, "field", where),
+        reason=_require(data, "reason", where),
+        required_for=tuple(_require(data, "required_for", where)),
+        source_locator=data.get("source_locator"),
+    )
+
+
+def report_from_json(data: Any) -> DrillReport:
+    """Rebuild a frozen DrillReport from ``render_report_json`` output.
+
+    Unknown keys are rejected so silently dropped evidence cannot pass.
+    """
+    if not isinstance(data, dict):
+        raise ReportFormatError("report: expected a JSON object")
+    if data.get("schema_version") != 1:
+        raise ReportFormatError(f"report: unsupported schema_version {data.get('schema_version')!r}")
+
+    results: list[ScenarioVerification] = []
+    for i, raw in enumerate(_require(data, "scenario_results", "report")):
+        where = f"scenario_results[{i}]"
+        results.append(ScenarioVerification(
+            scenario_id=_require(raw, "scenario_id", where),
+            classification=_require(raw, "classification", where),
+            receipt_valid=bool(_require(raw, "receipt_valid", where)),
+            change_link_valid=bool(_require(raw, "change_link_valid", where)),
+            restoration_match=_tv_from_json(_require(raw, "restoration_match", where), f"{where}.restoration_match"),
+            evidence_preserved=_tv_from_json(_require(raw, "evidence_preserved", where), f"{where}.evidence_preserved"),
+            authority_delta=int(_require(raw, "authority_delta", where)),
+            safety_preserved=bool(_require(raw, "safety_preserved", where)),
+            sequence_valid=_tv_from_json(_require(raw, "sequence_valid", where), f"{where}.sequence_valid"),
+            duration_ns=int(_require(raw, "duration_ns", where)),
+            failures=tuple(_require(raw, "failures", where)),
+            unknowns=tuple(_unknown_from_json(u, f"{where}.unknowns") for u in raw.get("unknowns", [])),
+            implementation_class=ImplementationClass(
+                raw.get("implementation_class", ImplementationClass.PURE_CONTRACT_CASE.value)
+            ),
+            rollback_kind=raw.get("rollback_kind", ""),
+            change_set_id=raw.get("change_set_id", ""),
+            receipt_id=raw.get("receipt_id", ""),
+        ))
+
+    raw_metrics = dict(_require(data, "metrics", "report"))
+    known_metric_fields = {f.name for f in fields(RecoveryMetrics)}
+    extra = set(raw_metrics) - known_metric_fields
+    if extra:
+        raise ReportFormatError(f"metrics: unexpected keys {sorted(extra)}")
+    if "regressions" in raw_metrics:
+        raw_metrics["regressions"] = tuple(raw_metrics["regressions"])
+    metrics = RecoveryMetrics(**raw_metrics)
+
+    verdict = _require(data, "verdict", "report")
+    if verdict not in ("pass", "hold", "reject"):
+        raise ReportFormatError(f"report: invalid verdict {verdict!r}")
+
+    return DrillReport(
+        schema_version=1,
+        run_id=_require(data, "run_id", "report"),
+        candidate_revision=_require(data, "candidate_revision", "report"),
+        scenario_results=tuple(results),
+        metrics=metrics,
+        authority_delta=int(data.get("authority_delta", 0)),
+        unsafe_attempts=int(data.get("unsafe_attempts", 0)),
+        regressions=tuple(data.get("regressions", ())),
+        unknowns=tuple(_unknown_from_json(u, "report.unknowns") for u in data.get("unknowns", [])),
+        verdict=verdict,
+    )
+
+
+def verify_report_consistency(report: DrillReport) -> tuple[str, ...]:
+    """Recompute metrics and verdict from per-scenario results.
+
+    Returns a tuple of discrepancies; empty means the stored summary is
+    exactly what the evidence supports.  Durations are excluded because
+    they are measurements, not derived claims.
+    """
+    from .recovery_verify import compute_metrics, determine_verdict
+
+    problems: list[str] = []
+    recomputed = compute_metrics(report.scenario_results)
+    skip = {"median_duration_ns", "p95_duration_ns"}
+    for f in fields(RecoveryMetrics):
+        if f.name in skip:
+            continue
+        stored, actual = getattr(report.metrics, f.name), getattr(recomputed, f.name)
+        if stored != actual:
+            problems.append(f"metrics.{f.name}: stored {stored!r} != recomputed {actual!r}")
+    expected_verdict = determine_verdict(recomputed)
+    if report.verdict != expected_verdict:
+        problems.append(f"verdict: stored {report.verdict!r} != recomputed {expected_verdict!r}")
+    return tuple(problems)
+

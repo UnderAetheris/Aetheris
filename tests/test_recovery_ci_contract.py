@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 
 from aetheris.evaluation.recovery_model import (
     DrillReport,
@@ -83,7 +85,7 @@ class TestCIContractNoGeneratedArtifacts:
         )
         for line in git_status.stdout.splitlines():
             if "recovery-drill" in line or "reports/recovery" in line:
-                assert False, f"Tracked generated artifact found: {line}"
+                raise AssertionError(f"Tracked generated artifact found: {line}")
 
     def test_no_tracked_temp_roots(self):
         repo_root = Path(__file__).resolve().parent.parent
@@ -95,7 +97,7 @@ class TestCIContractNoGeneratedArtifacts:
         )
         for line in git_status.stdout.splitlines():
             if "recovery_drill_" in line:
-                assert False, f"Tracked temp root found: {line}"
+                raise AssertionError(f"Tracked temp root found: {line}")
 
 
 class TestCIContractScenarioIntegrity:
@@ -422,6 +424,10 @@ class TestCIContractRepositoryIntegrity:
         sha = result.stdout.strip()
         assert len(sha) == 40, f"SHA length incorrect: {sha}"
 
+    @pytest.mark.skipif(
+        os.environ.get("CI", "").lower() != "true",
+        reason="clean-checkout invariant only holds in CI; local work trees are legitimately dirty",
+    )
     def test_working_tree_is_clean(self):
         repo_root = Path(__file__).resolve().parent.parent
         result = subprocess.run(
@@ -441,5 +447,9 @@ class TestCIContractRepositoryIntegrity:
             text=True,
         )
         for line in result.stdout.splitlines():
-            if "recovery-drill" in line or "recovery_drill" in line:
-                assert False, f"Untracked recovery drill artifact: {line}"
+            # Only *untracked* paths can be drill output; edits to tracked
+            # source files such as tests/test_recovery_drill.py are not.
+            if not line.startswith("??"):
+                continue
+            if "recovery-drill" in line or "recovery_drill_" in line:
+                raise AssertionError(f"Untracked recovery drill artifact: {line}")

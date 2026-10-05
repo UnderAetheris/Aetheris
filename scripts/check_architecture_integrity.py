@@ -380,6 +380,30 @@ def _is_excluded(path: Path) -> bool:
     return False
 
 
+def _module_name_for(py: Path) -> str:
+    """Dotted import path for a scanned file (``src/`` prefix stripped)."""
+    rel = py.relative_to(REPO_ROOT).with_suffix("")
+    parts = list(rel.parts)
+    if parts and parts[0] == "src":
+        parts = parts[1:]
+    if parts and parts[-1] == "__init__":
+        parts = parts[:-1]
+    return ".".join(parts)
+
+
+def _iter_calls_with_scope(tree: ast.AST):
+    """Yield ``(call_node, enclosing_qualname)`` for every call in *tree*."""
+    def visit(node: ast.AST, scope: tuple[str, ...]):
+        for child in ast.iter_child_nodes(node):
+            if isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                yield from visit(child, scope + (child.name,))
+            else:
+                if isinstance(child, ast.Call):
+                    yield child, ".".join(scope)
+                yield from visit(child, scope)
+    yield from visit(tree, ())
+
+
 def _scan_ast_for_side_effects(findings: list[Finding]) -> None:
     registered_exceptions: dict[str, list[dict[str, Any]]] = {}
     boundary_exceptions: dict[str, list[dict[str, Any]]] = {}
@@ -396,9 +420,11 @@ def _scan_ast_for_side_effects(findings: list[Finding]) -> None:
                         "source_path": exc.get("source_path"),
                     })
                 for ep in b.get("entrypoints", []):
-                    parts = ep.split(".")
-                    sym = parts[-1]
-                    registered_exceptions.setdefault(sym, []).append({"boundary": bid})
+                    # Keyed by the fully qualified *enclosing* function, e.g.
+                    # ``aetheris.safety.guard.SafetyLayer.run``.  Keying by the
+                    # bare symbol name previously exempted every ``*.run(...)``
+                    # call in the repository, including ``subprocess.run``.
+                    registered_exceptions.setdefault(ep, []).append({"boundary": bid})
         except Exception:
             pass
 
@@ -413,7 +439,8 @@ def _scan_ast_for_side_effects(findings: list[Finding]) -> None:
             except SyntaxError:
                 continue
             rel = py.relative_to(REPO_ROOT).as_posix()
-            for node in ast.walk(tree):
+            module = _module_name_for(py)
+            for node, qualname in _iter_calls_with_scope(tree):
                 if isinstance(node, ast.Call):
                     func = node.func
                     name = ""
@@ -441,7 +468,7 @@ def _scan_ast_for_side_effects(findings: list[Finding]) -> None:
                                     break
                             if matched:
                                 continue
-                        if (func.attr if isinstance(func, ast.Attribute) else name) in registered_exceptions:
+                        if qualname and f"{module}.{qualname}" in registered_exceptions:
                             continue
                         findings.append(Finding(
                             "side_effects",
@@ -471,7 +498,7 @@ def check_hidden_authority(findings: list[Finding]) -> None:
         "aetheris.controller.controller",
         "aetheris.controller.executive",
     ]
-    for class_name, src_path, allowed_imports in hidden_targets:
+    for class_name, src_path, _allowed_imports in hidden_targets:
         full_path = REPO_ROOT / src_path
         if not full_path.exists():
             continue

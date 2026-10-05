@@ -366,13 +366,26 @@ class TestCanonicalJson:
 
 
 class TestObjectIdentityValidationCollected:
+    def test_invalid_sha256_digest_rejected_at_construction(self):
+        # Defense in depth, layer 1: an invalid identity cannot be built.
+        with pytest.raises(ValueError, match="sha256 digest must be exactly 64"):
+            ObjectIdentity(
+                object_type="file", scope="repo",
+                locator=_tv("known", "x"), hash_algorithm="sha256",
+                digest=_tv("known", "short"), size_bytes=_tv("not_applicable", None, "test"),
+                version_ref=_tv("not_applicable", None, "test"),
+            )
+
     def test_invalid_sha256_digest_collected(self):
+        # Defense in depth, layer 2: the validator still collects the error
+        # for an identity whose fields were mutated after construction.
         bad_oid = ObjectIdentity(
             object_type="file", scope="repo",
             locator=_tv("known", "x"), hash_algorithm="sha256",
-            digest=_tv("known", "short"), size_bytes=_tv("not_applicable", None, "test"),
+            digest=_tv("known", "0" * 64), size_bytes=_tv("not_applicable", None, "test"),
             version_ref=_tv("not_applicable", None, "test"),
         )
+        object.__setattr__(bad_oid, "digest", _tv("known", "short"))
         cs = _make_cs(target=bad_oid, before=_oid(), after=_oid())
         result = validate_change_set(cs)
         assert not result.valid
@@ -393,17 +406,26 @@ class TestObjectIdentityValidationCollected:
 
 class TestCanonicalFactoriesFailExplicit:
     def test_make_change_set_does_not_swallow_exception(self):
-        with pytest.raises(Exception):
-            make_change_set(change_kind="not_a_change_kind")
+        # Complete, otherwise-valid kwargs so the failure is the enum itself.
+        kwargs = {f: getattr(_make_cs(), f) for f in ChangeSet.__dataclass_fields__}
+        kwargs["change_kind"] = "not_a_change_kind"
+        with pytest.raises(ValueError, match="not a valid ChangeKind"):
+            make_change_set(**kwargs)
 
     def test_make_rollback_receipt_does_not_swallow_exception(self):
-        from aetheris.changeset.model import RollbackReceipt, RollbackOutcome, RestorationConfirmation
-        with pytest.raises(Exception):
-            make_rollback_receipt(outcome="not_an_outcome")
+        base = _make_rr(_make_cs())
+        kwargs = {f: getattr(base, f) for f in RollbackReceipt.__dataclass_fields__}
+        kwargs["outcome"] = "not_an_outcome"
+        with pytest.raises(ValueError, match="not a valid RollbackOutcome"):
+            make_rollback_receipt(**kwargs)
+
+    def test_make_change_set_accepts_enum_value_strings(self):
+        kwargs = {f: getattr(_make_cs(), f) for f in ChangeSet.__dataclass_fields__}
+        kwargs["change_kind"] = ChangeKind.FILE_EDIT.value
+        assert make_change_set(**kwargs).change_kind is ChangeKind.FILE_EDIT
 
     def test_invalid_change_id_replaced_with_derived(self):
         cs = _make_cs()
-        derived = change_id(cs)
         cs2 = ChangeSet(change_id="chg_invalid", **{
             f.name: getattr(cs, f.name) for f in ChangeSet.__dataclass_fields__.values()
             if f.name != "change_id"

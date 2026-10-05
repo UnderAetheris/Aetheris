@@ -5,6 +5,7 @@ from typing import Any
 
 
 from aetheris.changeset.model import (
+    UNKNOWN_FIELD_VALUE,
     RollbackKind,
 )
 from aetheris.changeset.projector import (
@@ -208,8 +209,6 @@ def test_rollback_receipt_envelope_event_type_matches_reducer():
 def test_receipt_projection_derives_from_rollback_events():
     from aetheris.changeset.projector import ReceiptProjector
     from aetheris.changeset.model import ChangeSet, ObjectIdentity, TraceValue
-    from aetheris.changeset.model import RollbackOutcome
-    import copy
     cs = ChangeSet(
         schema_version=1, change_id="chg_test",
         trace_id=TraceValue(state="known", value="t1", source="test"),
@@ -251,7 +250,8 @@ def test_missing_capability_id_remains_typed_unknown():
     result = projector.project(MutationEvidence(trace_events=(env,), before_object=None, after_object=None, context=_ctx()))
     assert result.success
     cs = result.records[0]
-    assert isinstance(cs.capability_id, str) or hasattr(cs.capability_id, 'state')
+    assert cs.capability_id == UNKNOWN_FIELD_VALUE
+    assert any(u.field == "capability_id" for u in cs.unknowns)
 
 
 def test_missing_authority_class_remains_typed_unknown():

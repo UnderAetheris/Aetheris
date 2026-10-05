@@ -196,6 +196,33 @@ class TestSelfRepair:
         assert len(proposals) >= 1
         assert proposals[0].occurrences >= 3
 
+    def test_distinct_one_off_failures_are_not_a_recurring_problem(self, tmp_path):
+        # Regression: detect() used to normalise the *last* reason on every
+        # iteration, so N unrelated failures looked like one failure x N.
+        mem = _mem(tmp_path)
+        for reason in ("disk full", "network unreachable", "permission denied",
+                       "timeout talking to model"):
+            mem.record("task_blocked", {"reason": reason})
+        repair = SelfRepair(mem, str(tmp_path),
+                            KnowledgeStore(str(tmp_path / "know.jsonl")),
+                            ExperienceStore(str(tmp_path / "exp.jsonl")),
+                            LearnedKeywordStore(str(tmp_path / "learned.jsonl")))
+        assert repair.detect() == []
+
+    def test_recurring_failure_counted_per_reason(self, tmp_path):
+        mem = _mem(tmp_path)
+        for _ in range(3):
+            mem.record("task_blocked", {"reason": "path escapes workspace root"})
+        mem.record("task_blocked", {"reason": "unrelated final error"})
+        repair = SelfRepair(mem, str(tmp_path),
+                            KnowledgeStore(str(tmp_path / "know.jsonl")),
+                            ExperienceStore(str(tmp_path / "exp.jsonl")),
+                            LearnedKeywordStore(str(tmp_path / "learned.jsonl")))
+        proposals = repair.detect()
+        assert len(proposals) == 1
+        assert "workspace root" in proposals[0].problem
+        assert proposals[0].occurrences == 3
+
     def test_apply_non_keyword_repair_records_experience(self, tmp_path):
         mem = _mem(tmp_path)
         mem.record("task_blocked", {"reason": "some unknown error"})

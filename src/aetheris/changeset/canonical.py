@@ -7,8 +7,12 @@ from dataclasses import asdict, is_dataclass
 from typing import Any
 
 from .model import (
+    ChangeKind,
     ChangeSet,
+    MutationDisposition,
     ObjectIdentity,
+    RollbackKind,
+    RollbackOutcome,
     RollbackReceipt,
     TraceValue,
 )
@@ -108,8 +112,26 @@ def receipt_id(receipt: RollbackReceipt) -> str:
     return "rcpt_" + sha256_str(canonical_json(preimage))[:32]
 
 
+def _coerce_enum(kwargs: dict[str, Any], field: str, enum_cls: type) -> None:
+    """Coerce ``kwargs[field]`` to ``enum_cls``; raise ValueError if invalid.
+
+    Canonical factories must fail explicitly on bad enum values rather than
+    crash later (e.g. with AttributeError on ``.value``) or persist garbage.
+    """
+    if field in kwargs and not isinstance(kwargs[field], enum_cls):
+        try:
+            kwargs[field] = enum_cls(kwargs[field])
+        except ValueError as exc:
+            allowed = ", ".join(m.value for m in enum_cls)
+            raise ValueError(
+                f"{field}={kwargs[field]!r} is not a valid {enum_cls.__name__} (allowed: {allowed})"
+            ) from exc
+
+
 def make_change_set(**kwargs: Any) -> "ChangeSet":
     kwargs.setdefault("schema_version", 1)
+    _coerce_enum(kwargs, "change_kind", ChangeKind)
+    _coerce_enum(kwargs, "disposition", MutationDisposition)
     cs = ChangeSet(**kwargs)
     expected = change_id(cs)
     if cs.change_id != expected:
@@ -119,6 +141,8 @@ def make_change_set(**kwargs: Any) -> "ChangeSet":
 
 def make_rollback_receipt(**kwargs: Any) -> "RollbackReceipt":
     kwargs.setdefault("schema_version", 1)
+    _coerce_enum(kwargs, "rollback_kind", RollbackKind)
+    _coerce_enum(kwargs, "outcome", RollbackOutcome)
     rr = RollbackReceipt(**kwargs)
     expected = receipt_id(rr)
     if rr.receipt_id != expected:
