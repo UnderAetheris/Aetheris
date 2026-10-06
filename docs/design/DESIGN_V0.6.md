@@ -1,6 +1,6 @@
 # Design v0.6
 
-_Status: v0.6.1 (cleanup after owner review). Owner accepted the direction on 2026-10-06 ("way better than before"); details still under review (Q11). Prototype: [`prototype-v0.6/`](prototype-v0.6/). Supersedes v0.5 ([`DESIGN_V0.5.md`](DESIGN_V0.5.md)) if accepted. Everything in v0.5 not mentioned here still applies (type, signal colours, live task view, motion meanings)._
+_Status: superseded by v0.7 ([`DESIGN_V0.7.md`](DESIGN_V0.7.md)), which keeps everything here and adds failure, first-day, away and offline states. v0.6.1 was accepted by the owner on 2026-10-06 ("so perfect"). Prototype: [`prototype-v0.6/`](prototype-v0.6/)._
 
 ## Why v0.5 was not good enough
 

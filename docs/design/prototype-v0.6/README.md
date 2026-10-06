@@ -1,6 +1,6 @@
 # Prototype v0.6
 
-Clickable design prototype for the Aetheris desktop app. **Sample data only**: every number, file and result in it is made up for design review. It is a design target, not product code.
+Superseded by v0.7 (`../prototype-v0.7/`), which builds on it. Kept for comparison. Rationale: [`../DESIGN_V0.6.md`](../DESIGN_V0.6.md).
 
 Replaces v0.5 (`../prototype-v0.5/`) as the proposed target once the owner accepts it. Rationale: [`../DESIGN_V0.6.md`](../DESIGN_V0.6.md).
 
