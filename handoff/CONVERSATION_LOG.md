@@ -102,3 +102,12 @@ AI added `specs/` F00-F24 + TEMPLATE + INVENTORY (28 abilities, 9 manners, 10 ha
 - Design v0.5 (`docs/design/DESIGN_V0.5.md`, D-024) and prototype `docs/design/prototype-v0.5/`: layered dark-first surfaces, Geist type, two signal colours, Home opening on the task box, live task view with follow-along inspector (Files, Browser with highlighted passage, Changes typing in, Terminal streaming), one question mirrored in thread/Home/sidebar, learning shown in the result card, steering box, command menu, toasts with Undo, light and dark.
 - Rendered and checked: Home (dark, light, 390 px), task view at four moments (browser, diff, question, done) in dark and light, command menu; 48 s screen recording. Recording and screenshots shared in chat, not in the repo (text-only repo).
 
+### 4.4 Owner feedback on v0.5 (2026-10-06)
+- "Right direction" but wants it much more engaging, smooth and soft; it felt made up for screenshots rather than real use.
+- Dark must be the default.
+- Home elements and especially the sidebar feel overused; it does not feel like full control.
+
+### 4.5 Work done (v0.6)
+- Design v0.6 (`docs/design/DESIGN_V0.6.md`, D-025), prototype `docs/design/prototype-v0.6/`. Sidebar rebuilt as a control panel (state, activity bars, Now, reorderable Up next, Watch / Ask first / Trusted, free requests, learn while away, Pause everything); pages moved to top tabs; Do it / Plan first / Just ask; "Before it starts" panel; editable plan; working folder / permission / model menus; Needs you as a keyboard decision stack; Changed today with Undo per line; softer tokens. Rule adopted: no dead buttons.
+- Rendered and checked: Home dark (running, question, typing, plan review, menu open, paused), light, task view with question, 390 px; 70 s recording of the control flow. Shared in chat, not in the repo.
+
