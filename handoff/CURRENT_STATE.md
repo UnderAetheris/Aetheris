@@ -1,6 +1,6 @@
 # Current state
 
-_As of 2026-10-05 (end of session 3)._
+_As of 2026-10-06 (end of session 4). Session 4 was design only; backend unchanged._
 
 ## Built (backend, Phase 0)
 
@@ -11,6 +11,8 @@ Note: "production readiness" is `unknown` for every capability in the ledger. No
 ## Built (UI)
 
 Thin React shell: Composer, QueueList, TaskDetail, Indicators, ActivityLog, ConnectionBanner, Skeletons; API client with tests; polls the bridge every 1s. Not the product UI yet (see F26).
+
+Design target: **v0.5** (`docs/design/DESIGN_V0.5.md`, `docs/design/prototype-v0.5/`), pending owner (Q11). Designed: Home, live task view, command menu. Remaining pages are queued one by one (see the page queue in DESIGN_V0.5.md). v0.4 kept for history only.
 
 ## Docs and process
 
