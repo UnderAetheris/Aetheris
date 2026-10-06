@@ -1,6 +1,6 @@
 # Design v0.6
 
-_Status: proposal, waiting for the owner (Q11). Prototype: [`prototype-v0.6/`](prototype-v0.6/). Supersedes v0.5 ([`DESIGN_V0.5.md`](DESIGN_V0.5.md)) if accepted. Everything in v0.5 not mentioned here still applies (type, signal colours, live task view, motion meanings)._
+_Status: v0.6.1 (cleanup after owner review). Owner accepted the direction on 2026-10-06 ("way better than before"); details still under review (Q11). Prototype: [`prototype-v0.6/`](prototype-v0.6/). Supersedes v0.5 ([`DESIGN_V0.5.md`](DESIGN_V0.5.md)) if accepted. Everything in v0.5 not mentioned here still applies (type, signal colours, live task view, motion meanings)._
 
 ## Why v0.5 was not good enough
 
@@ -14,32 +14,45 @@ Looking at v0.5 again, the cause was the same for all three: most of the screen 
 
 ## The main change: the sidebar is a control panel, not a page list
 
-Pages moved to tabs at the top of the main panel. The sidebar now shows the agent itself and the controls over it:
+Pages moved to tabs at the top of the main panel. The sidebar shows the agent and the controls over it:
 
 | Part | What it does |
 | --- | --- |
-| State pill | Working / Needs you / Paused, always visible next to the name. |
-| Activity | 36 bars, 2 s each: how many steps and edits it made in the last 72 s. Shows at a glance whether it is busy, stuck or idle. Amber bar when it is waiting for you. |
-| Now | Running tasks with a progress ring and the step it is on. Pause each one on hover. Click to open the live view. |
-| Up next | The queue. Drag to reorder, move to top, remove (with Undo). New tasks can be queued with `Alt Enter`. |
-| What it may do on its own | Three levels: **Watch** (only looks), **Ask first** (asks before changes), **Trusted** (changes files itself, still asks before deleting, installing or pushing). One sentence below says exactly what the level means. |
-| Free requests today | How much of the free model quota is used. |
-| Learn while I'm away | On/off, with the hours. It only ever suggests changes. |
-| Pause everything | One button (`Ctrl Shift P`). Every task holds where it is, nothing changes until you resume. A bar across the main panel says so. Undo in the toast. |
+| Status | Running / Waiting / Paused / Idle, next to the name. |
+| Activity | 36 bars, 2 s each: number of steps and edits in the last 72 s. Shows at a glance whether it is busy, stuck or idle. Amber bar while an approval is waiting. |
+| Running | Running tasks with a progress ring and the current step. Pause each one on hover. Click to open the live view. Completed tasks leave this list. |
+| Queue | Tasks waiting to start. Drag to reorder, move to top, remove (with Undo). `Alt Enter` in the task box adds to the queue. |
+| Permissions | **Read only** (suggests changes, never makes them), **Ask first** (asks before editing, installing, deleting or pushing), **Edit files** (edits files in your folders, still asks before installing, deleting or pushing). One sentence below says exactly what the level allows. |
+| Model requests today | How much of the free model quota is used. |
+| Overnight practice | On/off, 1 to 7 am. Results need approval. |
+| Pause all | One button (`Ctrl Shift P`). Every task holds where it is; nothing runs or changes until you resume. A bar across the main panel says so. |
 
-## Control before it starts
+## Home (v0.6.1)
 
-- **Three ways to give it work**: *Do it* (starts now), *Plan first* (shows a plan you edit before it starts), *Just ask* (answers, touches no files).
-- **Before it starts** panel opens under the task box as soon as you type: when it starts, which folder it can use, what it may do on its own, which model and roughly how many requests. Each value flashes when you change it.
-- **Every chip works**: folder, what it may do for this task only, and model are real menus.
-- **Plan review**: drag steps to reorder, click a step to rename it, click its label to cycle *only looks / asks you / does it itself*, skip or bring back a step, add a step. The line at the bottom says in plain words where it will stop and ask.
+Home shows only what needs you now and what changed. Everything else has its own tab.
 
-## Control while it works and after
+1. **Date and status line**: "2 approvals waiting", then "2 tasks running · 3 queued · 3 changes today".
+2. **Task box** with three modes: **Task** (runs now), **Plan** (you review a plan before it runs), **Question** (no files are changed). Folder, permissions and model are real menus. As soon as you type, a panel shows: Starts, Folder, Permissions, Model.
+3. **Plan review** (Plan mode): drag steps, rename, click a permission to cycle *read only / ask first / automatic*, skip or restore a step, add a step. The last line says where approval is needed.
+4. **Approvals**: one at a time, with the exact command, what happens and how to undo it, Details for the files. `Y` approve, `N` later, `←` / `→` move between them.
+5. **Changes today**: every change with Undo / Redo.
 
-- **Needs you** is a stack: one decision at a time, the exact command, what happens and how to undo it, Details for the files. `Y` / `N` to answer, `←` / `→` to move between them. The cards behind show how many are left.
-- **Changed today**: every change it made today with Undo / Redo on each line.
-- **Running** cards show the step strip and have their own pause button.
-- Top bar: model chip with requests left, search (`Ctrl K`).
+Removed from Home in v0.6.1 (each already has a place): the greeting, the three stat numbers, the suggestion chips, the Running cards (sidebar shows them), the practice score (Progress tab), PC health (PC health tab), and the model chip in the top bar (the task box has it).
+
+## Wording rules (v0.6.1)
+
+The owner found the v0.6 wording "so much AI". The UI now reads like ordinary software:
+
+- **No chatty agent voice.** No "Can I push this fix?", "I'll start with...", "Okay, it will ask again tomorrow", "Good morning". Use plain labels: "Approval needed: push to GitHub", "Snoozed until tomorrow".
+- **No cute page names.** "Needs you" → **Approvals**, "What it learned" → **Progress**, "What it knows" → **Memory**, "Changed today" → **Changes today**, "Up next" → **Queue**, "Learn while I'm away" → **Overnight practice**, "Pause everything" → **Pause all**.
+- **Standard words for standard things**: Run, Queue, Approve, Later, Undo, Completed, Permissions, Read only.
+- **Short.** Toasts are one short line ("Task started.", "Removed from the queue."). Step titles state the result ("All 40 tests pass", "New test fails, as expected").
+- **Where the prototype cannot do the real thing** (folder picker, Stop, opening GitHub), the toast says what the desktop app does there, in one line.
+
+## Control while it works
+
+- Live task view: Pause, Stop, add an instruction while it runs, `Space` pause, `Y` / `N` answer, `↑` / `↓` move between steps. The right side (Changes, Terminal, Browser, Files) follows the live step while **Live** is on.
+- The demo speed control was removed from the task header (it was a prototype tool, not a product control); `?speed=` still works in the URL.
 
 ## Softer, smoother
 
@@ -62,19 +75,19 @@ Every control in the prototype does what it says (with sample data). Where the r
 
 Designed: **Home**, **Live task view**, **Command menu**, **Sidebar control panel**. Next, one page at a time, each shown to the owner before the next:
 
-1. **Needs you** (full inbox; reuses the decision stack)
-2. **What it learned** (practice score, every change tried with result, skills)
+1. **Approvals** (full list; reuses the approval card)
+2. **Progress** (practice score, every self-change tried with result, skills)
 3. **Reports** (daily and weekly)
-4. **What it knows** (memory you can edit, with where each memory came from)
+4. **Memory** (editable, with where each memory came from)
 5. **Tasks** (all tasks, long goals, the full queue)
 6. **Skills**
 7. **PC health**
-8. **Settings** (On its own / Ask me / Never per action, models, folders)
+8. **Settings** (Automatic / Ask first / Never per action, models, folders)
 9. **First-run setup** (free API keys, folders, first task in under 10 minutes)
 
 ## Known gaps
 
-- Narrow windows (< 900 px): the sidebar becomes a top strip with the state and Pause everything; the queue and levels are not reachable there yet.
-- Tasks started from Home run a short sample of five steps; only the date fix has the full live view.
+- Narrow windows (< 900 px): the sidebar becomes a top strip with the status and Pause all; the queue and permissions are not reachable there yet.
+- Tasks started from Home run a short five-step sample in the sidebar; only the date fix has the full live view.
 - Not checked on a real Windows machine yet (font rendering, Segoe fallback).
 - Logo is still a placeholder idea.

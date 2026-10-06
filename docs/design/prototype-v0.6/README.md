@@ -8,14 +8,14 @@ Replaces v0.5 (`../prototype-v0.5/`) as the proposed target once the owner accep
 
 Open `aetheris-prototype-v0.6.html` in any browser. Everything (fonts, icons, data) is inside the file. Dark by default.
 
-- **Type a task** on Home: the "Before it starts" panel opens. Change folder, permission and model from the chips.
-- **Plan first**, then `Enter`: edit the plan (drag, rename, change what each step may do, skip, add), then Start. It appears under Now and Running.
-- `Alt Enter` (or "Add to the queue" in the sidebar) puts a task in **Up next**. Drag to reorder.
-- **Needs you**: `Y` / `N` to answer, `←` / `→` to move between cards. Undo in the toast.
-- **Sidebar**: switch Watch / Ask first / Trusted, turn on learning while away, **Pause everything** (`Ctrl Shift P`).
-- **Changed today**: Undo / Redo any line.
+- **Type a task** on Home: the panel under the box shows when it starts, the folder, permissions and model. Change them from the menus.
+- **Plan** mode, then `Enter`: edit the plan (drag, rename, change each step's permission, skip, add), then **Run plan**. It appears under Running in the sidebar.
+- `Alt Enter` (or **Add task** in the sidebar) adds to the **Queue**. Drag to reorder.
+- **Approvals**: `Y` approve, `N` later, `←` / `→` move between cards. Undo in the toast.
+- **Sidebar**: Read only / Ask first / Edit files, overnight practice, **Pause all** (`Ctrl Shift P`).
+- **Changes today**: Undo / Redo any line.
 - Click the date-fix task to open the live view: `Space` pause, `Y` / `N` answer, `↑` / `↓` move between steps.
-- `Ctrl K` command menu, `Ctrl N` new task.
+- `Ctrl K` command menu, `Ctrl N` new task, `Esc` closes menus and the plan.
 
 URL options (for screenshots): `?view=home|task|tasks|needs|reports|learned|knows|skills|pc|settings`, `&theme=light|dark`, `&speed=3`, `&ff=N` (fast-forward to event N of 10), `&hold=ms` (freeze ms after reaching it), `&palette=1`, `&paused=1`.
 
