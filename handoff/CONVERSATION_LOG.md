@@ -86,3 +86,19 @@ AI added `specs/` F00-F24 + TEMPLATE + INVENTORY (28 abilities, 9 manners, 10 ha
 - Response: built clickable prototype v0.4 (`docs/design/prototype/`): live run with thinking, pinned plan, streaming test output and typed-in diff, pause/stop/speed, undo/redo, inline question with Y/N, plus every section and a Ctrl K command menu. Rendered 9 screens and a 40 s screen recording of the live run (recording shared in chat, not in the repo).
 - Single-file build: a short Python script inlines `base.css` + `app.css` (fonts as base64), `data.js`, `app.js` into `aetheris-prototype.html`. Screenshots taken with headless Chromium over CDP (Node's built-in WebSocket); note: at 2x scale, a CSS rule `min-width:max-content` on diff lines froze Chromium's screenshot, so long code lines wrap instead.
 
+## Session 4: 2026-10-06 (Notion AI, Claude Opus 5.5)
+
+### 4.1 Re-onboarding
+- Owner re-shared the founding brief and session 1-3 screenshots (Q13 answered). Asked for honest progress, next steps, feedback.
+- AI cloned the repo and re-ran the gates: ruff clean, 1015 passed / 1 skipped, integrity clean, ~21k lines in `src/`. Key finding: `aetheris.model` is not imported by anything else, so no model is wired in yet; the assistant is still rule-based.
+- AI pushback given again in plain words: no own model training; "better every second" is not real (nightly measured cycles are); AFK web learning is the biggest prompt-injection risk (proposals only); no home-made antivirus (read Windows Security instead); self-code only as PRs gated by the benchmark.
+
+### 4.2 Owner direction
+- "I just want to design it first, then we will think about approaches." Long, careful sessions; every detail matters; must compete with today's apps; engaging and systematic.
+- On v0.4: "fine but not that good", "looks kind of old".
+- Asked whether to design page by page. AI decision: yes, page by page, after one shared foundation (tokens + Home + live task view), because every other page reuses those parts.
+
+### 4.3 Work done
+- Design v0.5 (`docs/design/DESIGN_V0.5.md`, D-024) and prototype `docs/design/prototype-v0.5/`: layered dark-first surfaces, Geist type, two signal colours, Home opening on the task box, live task view with follow-along inspector (Files, Browser with highlighted passage, Changes typing in, Terminal streaming), one question mirrored in thread/Home/sidebar, learning shown in the result card, steering box, command menu, toasts with Undo, light and dark.
+- Rendered and checked: Home (dark, light, 390 px), task view at four moments (browser, diff, question, done) in dark and light, command menu; 48 s screen recording. Recording and screenshots shared in chat, not in the repo (text-only repo).
+

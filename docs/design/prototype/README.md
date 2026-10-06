@@ -1,5 +1,7 @@
 # Clickable prototype (v0.4)
 
+> Superseded by [`../prototype-v0.5/`](../prototype-v0.5/) (proposal, 2026-10-06). Kept for history until the owner accepts v0.5.
+
 A working mock of the Aetheris desktop app. Plain HTML, CSS and JS, no build step. **Sample data only.** It is a design target, not product code; the real UI in `shell/` should match it.
 
 **Quickest way to try it:** download `aetheris-prototype.html` and open it in any browser. Fonts are inside the file.
