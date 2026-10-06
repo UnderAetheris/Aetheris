@@ -120,3 +120,12 @@ AI added `specs/` F00-F24 + TEMPLATE + INVENTORY (28 abilities, 9 manners, 10 ha
 - Bugs fixed: send button did nothing; completed task stayed under Running and the count was off; move-to-top on the first queue item did nothing; "Open on GitHub" did nothing; phone layout scrolled sideways; wrong Windows path. Demo speed control removed from the task header.
 - Checked with an automated click-through (every visible control in Home dark/light, task view, 1100 px, 390 px: no script errors, no overflow, no dead controls) plus screenshots and a recording.
 
+### 4.8 Owner feedback on v0.6.1 (2026-10-06)
+- "So perfect", happy with it for now. Asked for honest feedback and ideas.
+- Weak points given: only the good path is shown (no failure states), empty first day not designed, not checked at 1366 × 768 / 1536 × 864, activity bars decorative, sidebar rows used rarely, design ahead of the engine.
+- Ideas given: While you were away, Problems card, Undo since a time, quota forecast, rule suggestions, drag and drop files; quick add (`Alt Space`), tray icon, Windows notifications with Approve / Later, routines, task replay, quiet hours. Order: 1) problems and first day, 2) away and undo since, 3) Approvals page then Settings, 4) quick add / tray / notifications, 5) Progress and Reports.
+- Owner: "yes, go through, i like the ideas."
+
+### 4.9 Work done (v0.7)
+- Steps 1 and 2 of that order: design v0.7 (`docs/design/DESIGN_V0.7.md`, D-027), prototype `docs/design/prototype-v0.7/`. Problems (failed, stuck), While you were away, first day (empty states, Getting started, examples), offline, quota meter only when low, Undo since a time, activity bar details, overnight practice moved to `Ctrl K`.
+- Checked: automated click-through in every state (dark, light, 1440 / 1366 / 390 px), no script errors or overflow; screenshots at 1366 × 768 and 1536 × 864; 60 s recording. Shared in chat, not in the repo.
