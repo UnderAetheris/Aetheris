@@ -24,6 +24,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versioning: SemVer once
 - Clean-work-tree contract test runs only in CI; artifact check only flags untracked paths.
 
 ### Added
+- `docs/design/prototype-v0.6/` and `docs/design/DESIGN_V0.6.md`: dark by default, softer surfaces; sidebar turned into a control panel (state, activity, Now, reorderable Up next, what it may do on its own, free requests, learn while away, Pause everything); pages moved to top tabs; Do it / Plan first / Just ask with an editable plan and a "Before it starts" panel; working folder, permission and model menus; Needs you as a keyboard decision stack; Changed today with Undo per line. Every drawn control works.
 - `docs/design/prototype-v0.5/` and `docs/design/DESIGN_V0.5.md`: redesigned Home, live task view (follow-along Files / Browser / Changes / Terminal), command menu; layered dark-first surfaces, Geist type, two signal colours; one question mirrored in thread, Home and sidebar; single-file build with fonts as base64 text.
 - `docs/design/prototype/`: clickable UI prototype v0.4 (live run view, all sections, keyboard and command menu) with a single-file build and screenshots.
 - `docs/design/BRAND_DIRECTION.md` (design v0.3 proposal: built from what the app does, plain writing rules) with HTML mockups and rendered light/dark screens; `docs/product/MONETIZATION.md` (proposal); `handoff/QUALITY_PASS_2026-10-05.md`.

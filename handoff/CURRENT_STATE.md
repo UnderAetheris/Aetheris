@@ -12,7 +12,7 @@ Note: "production readiness" is `unknown` for every capability in the ledger. No
 
 Thin React shell: Composer, QueueList, TaskDetail, Indicators, ActivityLog, ConnectionBanner, Skeletons; API client with tests; polls the bridge every 1s. Not the product UI yet (see F26).
 
-Design target: **v0.5** (`docs/design/DESIGN_V0.5.md`, `docs/design/prototype-v0.5/`), pending owner (Q11). Designed: Home, live task view, command menu. Remaining pages are queued one by one (see the page queue in DESIGN_V0.5.md). v0.4 kept for history only.
+Design target: **v0.6** (`docs/design/DESIGN_V0.6.md`, `docs/design/prototype-v0.6/`), pending owner (Q11). Designed: Home, live task view, command menu, sidebar control panel. Remaining pages are queued one by one (page queue in DESIGN_V0.6.md). v0.4 and v0.5 kept for history only.
 
 ## Docs and process
 

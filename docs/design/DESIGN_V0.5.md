@@ -1,6 +1,6 @@
 # Design v0.5
 
-_Status: proposal, waiting for the owner (Q11). Prototype: [`prototype-v0.5/`](prototype-v0.5/). Supersedes v0.4 as the target if accepted._
+_Status: **superseded by [v0.6](DESIGN_V0.6.md)** (owner feedback 2026-10-06). Kept for history; rules not changed in v0.6 still apply. Was: proposal, waiting for the owner (Q11). Prototype: [`prototype-v0.5/`](prototype-v0.5/). Supersedes v0.4 as the target if accepted._
 
 ## Why v0.4 was not good enough
 

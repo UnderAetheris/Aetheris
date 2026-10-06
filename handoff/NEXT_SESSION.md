@@ -6,10 +6,11 @@ _Updated 2026-10-06, end of session 4. CI on `main` is green; keep it that way._
 
 **Design first, approaches later.** The owner wants the UI designed page by page before backend work resumes. Phase 1 (F13 router, below) waits until the owner says go.
 
-1. Open `docs/design/prototype-v0.5/aetheris-prototype-v0.5.html` and click through Home, the running task, and `Ctrl K`. Read `docs/design/DESIGN_V0.5.md`.
-2. Apply the owner's feedback on v0.5 first (check `CONVERSATION_LOG.md` session 4 and later).
-3. Then design the next page in the queue (DESIGN_V0.5.md: Needs you, What it learned, Reports, ...), reusing the existing parts. One page per review round. Show rendered screenshots (dark and light) and a short recording, not descriptions.
-4. Edit sources in `prototype-v0.5/`, run `python build.py`, render with headless Chromium (Playwright `chromium.launch({executablePath})` works; video needs ffmpeg at Playwright's expected path).
+1. Open `docs/design/prototype-v0.6/aetheris-prototype-v0.6.html` and click through Home (type a task, Plan first, the sidebar controls, Pause everything), the running task, and `Ctrl K`. Read `docs/design/DESIGN_V0.6.md`.
+2. Apply the owner's feedback on v0.6 first (check `CONVERSATION_LOG.md` session 4 and later).
+3. Then design the next page in the queue (DESIGN_V0.6.md: Needs you, What it learned, Reports, ...), reusing the existing parts. One page per review round. Show rendered screenshots (dark and light) and a short recording, not descriptions.
+4. Rule since v0.6: no dead buttons. Every drawn control must work in the prototype, or show a toast saying what the full app does.
+5. Edit sources in `prototype-v0.6/`, run `python build.py`, render with headless Chromium (Playwright `chromium.launch({executablePath})` works; video needs ffmpeg at Playwright's expected path).
 
 ---
 
