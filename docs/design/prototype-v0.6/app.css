@@ -168,9 +168,9 @@ button.chip:hover,button.chip.open{background:var(--raised-2);color:var(--text)}
 
 /* ---------- home ---------- */
 .home{max-width:1080px;margin:0 auto;padding:36px 40px 72px}
-.hello{display:flex;align-items:flex-end;gap:24px}
-.hello .date{font-size:12px;color:var(--text-3);font-family:var(--mono);letter-spacing:.04em;text-transform:uppercase}
-.hello h1{font-size:30px;font-weight:600;letter-spacing:-.03em;margin-top:6px;line-height:1.15}
+.hello{display:block}
+.hello .date{font-size:13px;color:var(--text-3)}
+.hello h1{font-size:28px;font-weight:600;letter-spacing:-.03em;margin-top:6px;line-height:1.15}
 .hello p{color:var(--text-2);margin-top:6px;font-size:15px}
 .hello p b{color:var(--text);font-weight:500}
 .stats{margin-left:auto;display:flex;gap:4px}
@@ -230,7 +230,7 @@ button.chip:hover,button.chip.open{background:var(--raised-2);color:var(--text)}
 .planrev .acts{display:flex;gap:8px;margin-top:14px;align-items:center}
 .planrev .acts .faint{font-size:12px}
 
-.grid{display:grid;grid-template-columns:minmax(0,1fr) 336px;gap:28px;margin-top:40px;align-items:start}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:28px;margin-top:40px;align-items:start}
 .col{display:flex;flex-direction:column;gap:32px;min-width:0}
 .sec-h{display:flex;align-items:center;gap:8px;margin-bottom:12px;min-height:26px}
 .sec-h h2{font-size:14px;font-weight:600;letter-spacing:-.005em}
@@ -255,7 +255,7 @@ button.chip:hover,button.chip.open{background:var(--raised-2);color:var(--text)}
 .dcard .src .tag{height:20px}
 .dcard .tt{font-size:17px;font-weight:600;letter-spacing:-.015em;margin-top:8px}
 .dcard .cmd{margin-top:12px;padding:10px 12px;border-radius:var(--r);background:var(--sunken);box-shadow:inset 0 0 0 1px var(--line);color:var(--text-2);font-family:var(--mono);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dcard .facts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.dcard .facts{display:flex;flex-direction:column;gap:6px;margin-top:12px}
 .dcard .fact{display:flex;gap:8px;font-size:12.5px;color:var(--text-2);line-height:1.4}
 .dcard .fact svg{width:14px;height:14px;color:var(--text-3);margin-top:1px}
 .dcard .det{display:grid;grid-template-rows:0fr;transition:grid-template-rows var(--t-slow) var(--ease-out)}
@@ -525,7 +525,9 @@ button.chip:hover,button.chip.open{background:var(--raised-2);color:var(--text)}
 
 @media (max-width:1180px){.grid{grid-template-columns:1fr}.task{grid-template-columns:1fr 380px}}
 @media (max-width:900px){.composer .bar{flex-wrap:wrap}.top .chip .mono,.top .meter,.searchbtn kbd,#modelChip{display:none}
-  .app{grid-template-columns:1fr;height:auto;min-height:100vh}
+  .app{grid-template-columns:minmax(0,1fr);height:auto;min-height:100vh}
+  .tabs-nav{min-width:0;overflow-x:auto;scrollbar-width:none}.tabs-nav .ind{display:none}.tabs-nav a.on{background:var(--raised-2)}
+  .searchbtn{font-size:0;gap:0;padding:0 9px}.grid{grid-template-columns:minmax(0,1fr)}
   .con{flex-direction:row;align-items:center;padding:10px 14px;gap:10px;position:sticky;top:0;z-index:20;background:var(--bg)}
   .con-h{flex:1}.pulse-box,.con-scroll,.me,.ctrl>div,.ctrl>.row-sw{display:none}
   .ctrl{padding:0;background:none;box-shadow:none;border:0}.kill{height:32px;padding:0 12px;font-size:12.5px}.kill kbd{display:none}

@@ -2,12 +2,12 @@
 window.DATA = {
   plan: ['Read the bug', 'Find the cause', 'Write a test', 'Fix the code', 'Run all tests', 'Push to GitHub'],
   needs: [
-    { id: 'logs', title: 'Delete 212 old log files in Downloads', src: 'PC health · 6:40 pm', cmd: 'D:\\Users\\you\\Downloads\\*.log   older than 30 days · 1.4 GB', facts: [['refresh', 'Goes to the Recycle Bin, restorable for 30 days'], ['eye', 'Nothing else in Downloads is touched']], det: [['setup-2024-03.log', '412 MB'], ['steam-crash-dump.log', '318 MB'], ['npm-debug (186 files)', '402 MB'], ['24 other files', '268 MB']], yes: 'Delete', done: 'Moved 212 files to the Recycle Bin', chg: 'Moved 212 log files to the Recycle Bin' },
-    { id: 'startup', title: 'Stop 3 apps from opening when Windows starts', src: 'PC health · 6:41 pm', cmd: 'Spotify · Steam · Epic Games Launcher', facts: [['clock', 'Startup takes about 41 s now'], ['refresh', 'Can be turned back on in one click']], det: [['Spotify', 'adds ~6 s'], ['Steam', 'adds ~9 s'], ['Epic Games Launcher', 'adds ~7 s']], yes: 'Stop them', done: 'Stopped 3 startup apps', chg: 'Stopped 3 apps from opening at startup' },
+    { id: 'logs', title: 'Delete 212 old log files in Downloads', src: 'PC health · 6:40 pm', cmd: 'C:\\Users\\you\\Downloads\\*.log   older than 30 days · 1.4 GB', facts: [['refresh', 'Goes to the Recycle Bin, restorable for 30 days'], ['eye', 'Other files in Downloads are not touched']], det: [['setup-2024-03.log', '412 MB'], ['steam-crash-dump.log', '318 MB'], ['npm-debug (186 files)', '402 MB'], ['24 other files', '268 MB']], yes: 'Delete', done: 'Moved 212 files to the Recycle Bin', chg: 'Moved 212 log files to the Recycle Bin' },
+    { id: 'startup', title: 'Stop 3 apps from opening when Windows starts', src: 'PC health · 6:41 pm', cmd: 'Spotify · Steam · Epic Games Launcher', facts: [['clock', 'Startup currently takes about 41 s'], ['refresh', 'Re-enable in one click']], det: [['Spotify', 'adds ~6 s'], ['Steam', 'adds ~9 s'], ['Epic Games Launcher', 'adds ~7 s']], yes: 'Stop them', done: 'Stopped 3 startup apps', chg: 'Stopped 3 apps from opening at startup' },
   ],
   queue: [
     { id: 'q1', t: 'Update the README for the v2 release', m: 'invoice-tool \u00b7 plan approved' },
-    { id: 'q2', t: 'Find unused CSS in the website', m: 'site \u00b7 read only' },
+    { id: 'q2', t: 'Find unused CSS in the website', m: 'website \u00b7 read only' },
     { id: 'q3', t: 'Write this week\u2019s report', m: 'every Friday \u00b7 6 pm' },
   ],
   changed: [
@@ -16,7 +16,7 @@ window.DATA = {
     { id: 'c3', t: 'Updated 2 packages in website', m: '9:40 am \u00b7 package.json', i: 'pencil' },
   ],
   providers: [
-    ['auto', 'Auto', 'Picks the best free model for each step and switches when one runs out', ''],
+    ['auto', 'Auto', 'Picks a free model for each step, switches when one runs out', ''],
     ['gemini', 'Gemini 2.5 Flash', 'Google AI Studio, free tier', '1,085 left today'],
     ['groq', 'Llama 3.3 70B on Groq', 'Fast, free tier', '13,200 left today'],
     ['openrouter', 'OpenRouter free models', 'Backup when others run out', '48 left today'],

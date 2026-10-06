@@ -111,3 +111,12 @@ AI added `specs/` F00-F24 + TEMPLATE + INVENTORY (28 abilities, 9 manners, 10 ha
 - Design v0.6 (`docs/design/DESIGN_V0.6.md`, D-025), prototype `docs/design/prototype-v0.6/`. Sidebar rebuilt as a control panel (state, activity bars, Now, reorderable Up next, Watch / Ask first / Trusted, free requests, learn while away, Pause everything); pages moved to top tabs; Do it / Plan first / Just ask; "Before it starts" panel; editable plan; working folder / permission / model menus; Needs you as a keyboard decision stack; Changed today with Undo per line; softer tokens. Rule adopted: no dead buttons.
 - Rendered and checked: Home dark (running, question, typing, plan review, menu open, paused), light, task view with question, 390 px; 70 s recording of the control flow. Shared in chat, not in the repo.
 
+### 4.6 Owner feedback on v0.6 (2026-10-06)
+- "Perfect direction." Sidebar control panel: "way better than before".
+- Before new pages: finish v0.6. Some bugs and errors, things that should not be on Home, and above all the vocabulary "looks so much AI". Plus touch-ups.
+
+### 4.7 Work done (v0.6.1)
+- Rewrote every label, message and step text (wording rules in DESIGN_V0.6.md, D-026). Home cut to status line, task box, Approvals, Changes today.
+- Bugs fixed: send button did nothing; completed task stayed under Running and the count was off; move-to-top on the first queue item did nothing; "Open on GitHub" did nothing; phone layout scrolled sideways; wrong Windows path. Demo speed control removed from the task header.
+- Checked with an automated click-through (every visible control in Home dark/light, task view, 1100 px, 390 px: no script errors, no overflow, no dead controls) plus screenshots and a recording.
+
