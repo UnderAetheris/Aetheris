@@ -129,3 +129,11 @@ AI added `specs/` F00-F24 + TEMPLATE + INVENTORY (28 abilities, 9 manners, 10 ha
 ### 4.9 Work done (v0.7)
 - Steps 1 and 2 of that order: design v0.7 (`docs/design/DESIGN_V0.7.md`, D-027), prototype `docs/design/prototype-v0.7/`. Problems (failed, stuck), While you were away, first day (empty states, Getting started, examples), offline, quota meter only when low, Undo since a time, activity bar details, overnight practice moved to `Ctrl K`.
 - Checked: automated click-through in every state (dark, light, 1440 / 1366 / 390 px), no script errors or overflow; screenshots at 1366 × 768 and 1536 × 864; 60 s recording. Shared in chat, not in the repo.
+
+### 4.10 Owner feedback on v0.7 (2026-10-06)
+- "Yes" to continuing with step 3 (Approvals, then Settings).
+- New request: when stopping or reverting something, the owner wants to give the reason, together with the logs or the changes, and have all of it in the app. "No limits to be creative", but systematic.
+
+### 4.11 Work done (v0.8)
+- Design v0.8 (`docs/design/DESIGN_V0.8.md`, D-028), prototype `docs/design/prototype-v0.8/`. One reason card for stop, undo, decline, retry, queue removal and line flags: optional, points at log lines or files, shows what the reason will do before saving. Approvals page: Waiting, History (log at the time, marked lines, reasons summary, edit later), Rules (source of each rule, suggested rule, values, built-in locked). Flag a line in the task view and send it to the task.
+- Checked: scripted run through each path, automated click-through of Home states, task view and the Approvals tabs in dark/light at 1440 / 1366 / 390 px; 55 s recording. Shared in chat, not in the repo.

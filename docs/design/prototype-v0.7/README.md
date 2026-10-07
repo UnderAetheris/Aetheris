@@ -1,6 +1,6 @@
 # Prototype v0.7
 
-Clickable design prototype for the Aetheris desktop app. **Sample data only**: every number, file and result in it is made up for design review. It is a design target, not product code.
+Superseded by v0.8 (`../prototype-v0.8/`), which builds on it. Kept for comparison. Rationale: [`../DESIGN_V0.7.md`](../DESIGN_V0.7.md).
 
 Builds on v0.6.1 (`../prototype-v0.6/`). Adds failure states, the first day, while you were away, offline, the quota warning, undo since a time and activity details. Rationale: [`../DESIGN_V0.7.md`](../DESIGN_V0.7.md).
 
