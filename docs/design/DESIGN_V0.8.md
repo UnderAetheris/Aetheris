@@ -1,6 +1,6 @@
 # Design v0.8
 
-_Status: proposed, 2026-10-06. Prototype: [`prototype-v0.8/`](prototype-v0.8/). Builds on v0.7 ([`DESIGN_V0.7.md`](DESIGN_V0.7.md)); everything there still applies, including the wording rules in v0.6. This round: the **Approvals page**, and a reason for every stop, undo and decline, tied to the log and the files it is about._
+_Status: superseded by [v0.9](DESIGN_V0.9.md) (2026-10-07); was proposed 2026-10-06. Prototype: [`prototype-v0.8/`](prototype-v0.8/). Builds on v0.7 ([`DESIGN_V0.7.md`](DESIGN_V0.7.md)); everything there still applies, including the wording rules in v0.6. This round: the **Approvals page**, and a reason for every stop, undo and decline, tied to the log and the files it is about._
 
 ## Why
 

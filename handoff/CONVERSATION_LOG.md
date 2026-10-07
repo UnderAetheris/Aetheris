@@ -137,3 +137,11 @@ AI added `specs/` F00-F24 + TEMPLATE + INVENTORY (28 abilities, 9 manners, 10 ha
 ### 4.11 Work done (v0.8)
 - Design v0.8 (`docs/design/DESIGN_V0.8.md`, D-028), prototype `docs/design/prototype-v0.8/`. One reason card for stop, undo, decline, retry, queue removal and line flags: optional, points at log lines or files, shows what the reason will do before saving. Approvals page: Waiting, History (log at the time, marked lines, reasons summary, edit later), Rules (source of each rule, suggested rule, values, built-in locked). Flag a line in the task view and send it to the task.
 - Checked: scripted run through each path, automated click-through of Home states, task view and the Approvals tabs in dark/light at 1440 / 1366 / 390 px; 55 s recording. Shared in chat, not in the repo.
+
+### 4.12 Owner feedback on v0.8 (2026-10-07)
+- "i like that, continue with setting, show me what ideas you have for it."
+
+### 4.13 Work done (v0.9)
+- Design v0.9 (`docs/design/DESIGN_V0.9.md`, D-029), prototype `docs/design/prototype-v0.9/`. Settings: Permissions (start from, per action, per folder, Check an action), Models (order by drag, usage, keys, which model for what, limits), Folders (levels, Never open), Schedule (overnight practice, routines, quiet hours, battery, sleep), Notifications (per event, test notification), Reasons, Privacy and data (redaction preview, keep History, Export, Delete History), Appearance, Hard limits, Shortcuts. Search with `/`, changed-from-default list, Default per row, every change undoable and in History.
+- Ideas for later listed in DESIGN_V0.9.md (import settings, per-model privacy, schedule preview, notification digest, conflict warnings).
+- Checked: 47 scripted checks, layout check of every section at 1440 / 1366 / 1100 / 390 px dark and light; 70 s recording. Shared in chat, not in the repo.

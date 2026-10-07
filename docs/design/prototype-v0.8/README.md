@@ -1,6 +1,6 @@
 # Prototype v0.8
 
-Clickable design prototype for the Aetheris desktop app. **Sample data only**: every number, file and result in it is made up for design review. It is a design target, not product code.
+_Superseded by [`../prototype-v0.9/`](../prototype-v0.9/)._ Clickable design prototype for the Aetheris desktop app. **Sample data only**: every number, file and result in it is made up for design review. It is a design target, not product code.
 
 Builds on v0.7 (`../prototype-v0.7/`). Adds the Approvals page (Waiting, History, Rules), a reason for every stop, undo, decline, retry and removal, pointing at the log line or file a reason is about, and flagging a line while a task runs. Rationale: [`../DESIGN_V0.8.md`](../DESIGN_V0.8.md).
 
