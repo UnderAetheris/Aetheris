@@ -1,16 +1,16 @@
 # Next session: start here
 
-_Updated 2026-10-06, session 4 (design v0.7). CI on `main` is green; keep it that way._
+_Updated 2026-10-06, session 4 (design v0.8). CI on `main` is green; keep it that way._
 
 ## Owner direction (session 4)
 
 **Design first, approaches later.** The owner wants the UI designed page by page before backend work resumes. Phase 1 (F13 router, below) waits until the owner says go.
 
-1. Open `docs/design/prototype-v0.7/aetheris-prototype-v0.7.html` and click through Home in each state (`?state=problems|away|first|offline`), Undo since, the activity bars, the running task and `Ctrl K`. Read `docs/design/DESIGN_V0.7.md`.
-2. The owner approved the idea list after v0.6.1 (CONVERSATION_LOG 4.8). Steps 1 and 2 are done (v0.7). Continue with step 3: the **Approvals** page, then **Settings**; then quick add / tray / notifications; then Progress and Reports. Ask for owner feedback on v0.7 first if they have not given it.
+1. Open `docs/design/prototype-v0.8/aetheris-prototype-v0.8.html`: Home in each state (`?state=problems|away|first|offline`), stop / undo / retry and the reason card, Approvals (`?view=needs`, tabs Waiting / History / Rules), the task view with a flagged line (`?view=task&ff=6`), `Ctrl K`. Read `docs/design/DESIGN_V0.8.md`.
+2. Done so far: v0.7 (problems, first day, away, offline, undo since) and v0.8 (Approvals page, reasons). Next: **Settings** (per action Automatic / Ask first / Never, models, folders, overnight practice, quiet hours, how often to ask for reasons); then quick add / tray / notifications; then Progress and Reports. Ask for owner feedback on v0.8 first if not given.
 3. One page per review round. Show rendered screenshots (dark and light) and a short recording, not descriptions.
 4. Rules: no dead buttons, and the wording rules in DESIGN_V0.6.md (plain software labels, no chatty agent voice). Every drawn control must work in the prototype, or show a toast saying what the full app does. Check each new page at 1366 × 768 too.
-5. Edit sources in `prototype-v0.7/`, run `python build.py`, render with headless Chromium (Playwright `chromium.launch({executablePath})` works; video needs ffmpeg at Playwright's expected path).
+5. Edit sources in `prototype-v0.8/`, run `python build.py`, render with headless Chromium (Playwright `chromium.launch({executablePath})` works; video needs ffmpeg at Playwright's expected path).
 
 ---
 

@@ -1,6 +1,6 @@
 # Design v0.7
 
-_Status: proposed, 2026-10-06. Prototype: [`prototype-v0.7/`](prototype-v0.7/). Builds on v0.6.1 ([`DESIGN_V0.6.md`](DESIGN_V0.6.md)); everything there still applies, including the wording rules. This round covers steps 1 and 2 of the plan the owner approved after v0.6.1: failure states, the first day, coming back after time away, offline, and undoing many changes at once._
+_Status: superseded by v0.8 ([`DESIGN_V0.8.md`](DESIGN_V0.8.md)), which keeps everything here and adds the Approvals page and reasons. Prototype: [`prototype-v0.7/`](prototype-v0.7/)._
 
 ## Why
 
