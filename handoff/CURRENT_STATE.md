@@ -1,6 +1,6 @@
 # Current state
 
-_As of 2026-10-06 (end of session 4). Session 4 was design only; backend unchanged._
+_As of 2026-10-07 (session 4). Session 4 was design only; backend unchanged._
 
 ## Built (backend, Phase 0)
 
@@ -12,7 +12,7 @@ Note: "production readiness" is `unknown` for every capability in the ledger. No
 
 Thin React shell: Composer, QueueList, TaskDetail, Indicators, ActivityLog, ConnectionBanner, Skeletons; API client with tests; polls the bridge every 1s. Not the product UI yet (see F26).
 
-Design target: **v0.8** (`docs/design/DESIGN_V0.8.md`, `docs/design/prototype-v0.8/`), built on v0.6.1 (accepted) and v0.7. Designed: Home (including problems, first day, away, offline states), live task view (with line flags), Approvals page (Waiting, History, Rules), reasons for stop / undo / decline, command menu, sidebar control panel. Next: Settings (page queue in DESIGN_V0.8.md). v0.4 to v0.7 kept for history only.
+Design target: **v0.9** (`docs/design/DESIGN_V0.9.md`, `docs/design/prototype-v0.9/`), built on v0.6.1 (accepted), v0.7 and v0.8. Designed: Home (including problems, first day, away, offline states), live task view (with line flags), Approvals page (Waiting, History, Rules), reasons for stop / undo / decline, Settings (ten sections, Check an action, per-folder overrides, every change undoable and in History), command menu, sidebar control panel. Next: quick add / tray / Windows notifications (page queue in DESIGN_V0.9.md). v0.4 to v0.8 kept for history only.
 
 ## Docs and process
 
